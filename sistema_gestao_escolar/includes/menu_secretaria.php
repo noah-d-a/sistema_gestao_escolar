@@ -1,31 +1,31 @@
-<nav>
+<nav id="menu">
     <ul>
         <li>
-            <a href="inicio_secretaria.php">
+            <a href="../php/secretaria/inicio_secretaria.php">
                 <p>Início</p>
             </a>
         </li>
 
         <li>
-            <a href="cadastro_secretaria.php">
+            <a href="../php/secretaria/cadastro_secretaria.php">
                 <p>Cadastro</p>
             </a>
         </li>
 
         <li>
-            <a href="cadastrar_secretaria.php">
+            <a href="../php/secretaria/cadastrar_secretaria.php">
                 <p>Cadastrar</p>
             </a>
         </li>
 
         <li>
-            <a href="questionarios_secretaria.php">
+            <a href="../php/secretaria/questionarios_secretaria.php">
                 <p>Questionários</p>
             </a>
         </li>
 
         <li>
-            <a href="mensagens_secretaria.php">
+            <a href="../php/secretaria/mensagens_secretaria.php">
                 <p>Mensagens</p>
             </a>
         </li>
