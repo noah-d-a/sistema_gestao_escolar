@@ -16,6 +16,6 @@ body {
 }
 
 main {
-    width: 500px;
+    flex: 1;
     padding: 5px;
 }
