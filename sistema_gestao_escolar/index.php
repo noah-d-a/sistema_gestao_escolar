@@ -11,9 +11,10 @@
 
   <div class="card">
     <img src="imgs/logo.png" alt="Instituto Atlas"/>
-<h1>Instituto Atlas</h1>
+    <h1>Instituto Atlas</h1>
 
     <label>E-mail</label>
+  
     <input type="email" placeholder="seu@email.com"/>
 
     <label>Senha</label>
