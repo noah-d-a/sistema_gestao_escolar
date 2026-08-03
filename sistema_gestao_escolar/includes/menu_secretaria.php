@@ -13,8 +13,8 @@
         </li>
 
         <li>
-            <a href="../php/secretaria/cadastrar_secretaria.php">
-                <p>Cadastrar</p>
+            <a href="../php/secretaria/cadastros_secretaria.php">
+                <p>Cadastros</p>
             </a>
         </li>
 
