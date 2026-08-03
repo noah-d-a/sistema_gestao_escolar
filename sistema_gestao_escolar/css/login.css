@@ -3,27 +3,36 @@
   padding: 0;
   box-sizing: border-box;
 }
-/* seu comentário aqui */
+
 body {
   font-family: Arial, sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
- background: url('../imgs/fundo.jpg') no-repeat center center;
-background-size: cover;
+  background: url('../imgs/fundo.jpg') no-repeat center center;
+  background-size: cover;
 }
 
+
 .card {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 10px;
   padding: 40px 32px;
-  width: 340px;
+  width: 360px;
 }
+
+
+.card img {
+  display: block;
+  margin: 0 auto 16px;
+  width: 90px;
+}
+
 
 .card h1 {
   font-size: 1rem;
-  color: #1a3a6b;
+  color: #7B1F2E;
   text-align: center;
   margin-bottom: 6px;
 }
@@ -35,6 +44,7 @@ background-size: cover;
   margin-bottom: 20px;
 }
 
+
 label {
   display: block;
   font-size: 0.8rem;
@@ -43,6 +53,7 @@ label {
   margin-bottom: 4px;
   margin-top: 12px;
 }
+
 
 input, select {
   width: 100%;
@@ -55,14 +66,15 @@ input, select {
 }
 
 input:focus, select:focus {
-  border-color: #2e6db4;
+  border-color: #7B1F2E;
 }
+
 
 .esqueci {
   display: block;
   text-align: right;
   font-size: 0.75rem;
-  color: #2e6db4;
+  color: #7B1F2E;
   text-decoration: none;
   margin-top: 4px;
 }
@@ -71,9 +83,10 @@ input:focus, select:focus {
   text-decoration: underline;
 }
 
+
 button {
   width: 100%;
-  background-color: #1a3a6b;
+  background-color: #7B1F2E;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -85,5 +98,5 @@ button {
 }
 
 button:hover {
-  background-color: #2e6db4;
+  background-color: #A0263A;
 }

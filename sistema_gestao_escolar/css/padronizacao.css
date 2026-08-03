@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -12,15 +11,18 @@ body {
     background-color: #f4f5f7;
 }
 
-
-
 #menu {
     width: 250px;
-    background-color: #1a3a6b;
+    background-color: #7B1F2E;
     padding: 20px 10px;
     min-height: 100vh;
 }
 
+#menu img {
+    display: block;
+    margin: 0 auto 20px;
+    width: 80px;
+}
 
 #menu ul {
     list-style: none;
@@ -36,22 +38,22 @@ body {
 }
 
 #menu ul li a:hover {
-    background-color: #2e6db4;
+    background-color: #A0263A;
 }
 
 #menu ul li a p {
     font-size: 0.9rem;
 }
 
-
 main {
     flex: 1;
     padding: 30px;
 }
 
+
 main h1 {
     font-size: 1.3rem;
-    color: #1a3a6b;
+    color: #7B1F2E;
     margin-bottom: 6px;
 }
 
@@ -85,9 +87,8 @@ main p {
 .card span {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #1a3a6b;
+    color: #7B1F2E;
 }
-
 
 .tabela {
     background-color: #ffffff;
@@ -98,7 +99,7 @@ main p {
 
 .tabela h2 {
     font-size: 1rem;
-    color: #1a3a6b;
+    color: #7B1F2E;
     margin-bottom: 16px;
 }
 

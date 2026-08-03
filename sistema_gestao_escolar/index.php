@@ -10,8 +10,8 @@
 <body>
 
   <div class="card">
-    <h1>Sistema de Gestão Escolar</h1>
-    <p>Acesso restrito a membros da instituição.</p>
+    <img src="imgs/logo.png" alt="Instituto Atlas"/>
+<h1>Instituto Atlas</h1>
 
     <label>E-mail</label>
     <input type="email" placeholder="seu@email.com"/>

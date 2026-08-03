@@ -1,5 +1,7 @@
 <nav id="menu">
+    <img src="../../imgs/logo.png" alt="Instituto Atlas"/>
     <ul>
+   
         <li>
             <a href="../aluno/inicio_aluno.php">
                 <p>Início</p>
