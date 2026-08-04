@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <!-- CARDS -->
+    
         <div class="cards">
             <div class="card">
                 <h3>Média Geral</h3>
@@ -51,7 +51,6 @@
             </div>
         </div>
 
-        <!-- TABELA -->
         <div class="tabela">
             <h2>Notas por Disciplina</h2>
             <table>

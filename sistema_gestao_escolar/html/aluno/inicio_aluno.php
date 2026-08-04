@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <!-- CARDS -->
+    
         <div class="cards">
             <div class="card card-azul">
                 <h3>Média Geral</h3>
@@ -47,10 +47,9 @@
             </div>
         </div>
 
-        <!-- DUAS COLUNAS -->
+       
         <div class="duas-colunas">
 
-            <!-- NOTAS RECENTES -->
             <div class="tabela">
                 <h2>Notas Recentes</h2>
                 <table>
@@ -97,10 +96,10 @@
                 </table>
             </div>
 
-            <!-- LADO DIREITO -->
+            
             <div class="coluna-direita">
 
-                <!-- HORÁRIO DE HOJE -->
+               
                 <div class="tabela">
                     <h2>Horário de Hoje</h2>
                     <div class="horario-item">
@@ -140,7 +139,7 @@
                     </div>
                 </div>
 
-                <!-- AVISO -->
+                
                 <div class="aviso">
                     <p class="aviso-titulo">⚠ Atenção</p>
                     <p>Sua frequência em Química está em <strong>67%</strong>. O mínimo exigido é 75%.</p>
