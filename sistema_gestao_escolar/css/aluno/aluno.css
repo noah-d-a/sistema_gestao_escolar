@@ -118,3 +118,26 @@
     color: #92400e;
     margin-bottom: 0;
 }
+
+.select-bimestre {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+    outline: none;
+    cursor: pointer;
+}
+
+.select-bimestre:focus {
+    border-color: #7B1F2E;
+}
+
+.nota-rodape {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 16px;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 10px;
+}
