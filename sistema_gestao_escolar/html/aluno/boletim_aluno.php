@@ -31,7 +31,7 @@
         <div class="cards">
             <div class="card">
                 <h3>Média Geral</h3>
-                <span>7.6</span>
+                <span>8.4</span>
                 <p class="card-sub">Ano letivo 2026</p>
             </div>
             <div class="card">
