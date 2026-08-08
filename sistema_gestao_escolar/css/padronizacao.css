@@ -10,7 +10,7 @@ body {
     font-family: 'Inter', sans-serif;
     display: flex;
     min-height: 100vh;
-    background-color: #f4f5f7;
+    background-color: #e8e9eb;
 }
 
 #menu {
@@ -51,87 +51,100 @@ body {
 
 main {
     flex: 1;
-    padding: 30px;
+    padding: 24px 28px;
 }
 
 main h1 {
-    font-size: 1.3rem;
-    color: #7B1F2E;
-    margin-bottom: 6px;
+    font-size: 1.2rem;
+    color: #2d2d2d;
+    margin-bottom: 4px;
+    font-weight: 700;
 }
 
-main p {
-    font-size: 0.85rem;
-    color: #9ca3af;
-    margin-bottom: 24px;
+main > p {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 20px;
 }
 
 .cards {
     display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .card {
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 16px 18px;
     flex: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .card h3 {
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin-bottom: 8px;
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .card span {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #7B1F2E;
 }
 
 .tabela {
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
 }
 
 .tabela h2 {
-    font-size: 1rem;
-    color: #7B1F2E;
-    margin-bottom: 16px;
+    font-size: 0.95rem;
+    color: #ffffff;
+    background-color: #4b5563;
+    padding: 12px 18px;
     font-weight: 600;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
 }
 
 thead th {
     text-align: left;
-    padding: 8px 12px;
-    font-size: 0.75rem;
-    color: #9ca3af;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 14px;
+    font-size: 0.72rem;
+    color: #ffffff;
+    background-color: #6b7280;
     text-transform: uppercase;
+    letter-spacing: 0.4px;
     font-weight: 600;
 }
 
 tbody td {
-    padding: 10px 12px;
+    padding: 10px 14px;
     color: #374151;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: #f9fafb;
 }
 
 tbody tr:last-child td {
     border-bottom: none;
+}
+
+tbody tr:hover td {
+    background-color: #f3f4f6;
 }
