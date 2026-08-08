@@ -26,23 +26,24 @@
         <div class="duas-colunas">
 
             <div class="tabela">
-                <h2>Informações do Aluno</h2>
+                <h2>&#128100; Informações do Aluno</h2>
                 <div class="perfil-aluno">
                     <img src="../../imgs/fotoaluno.jpg" alt="Foto do Aluno" class="foto-aluno"/>
                     <div class="perfil-dados">
-                        <p><strong>Nome:</strong> João Alves</p>
+                        <p><strong>Unidade:</strong> Instituto Atlas</p>
                         <p><strong>RM:</strong> 2023001</p>
+                        <p><strong>Nome:</strong> João Alves</p>
                         <p><strong>Turma:</strong> 3º Ano A</p>
                         <p><strong>Período:</strong> Manhã</p>
                         <p><strong>Ano Letivo:</strong> 2026</p>
-                        <p><strong>Situação:</strong> <span class="badge badge-verde">Cursando</span></p>
+                        <p><strong>Sit. Matrícula:</strong> <span class="badge badge-verde">Cursando</span></p>
                     </div>
                 </div>
             </div>
 
-            <div class="tabela">
-                <h2 class="pendencias-titulo">⚠ Pendências</h2>
-                <p class="pendencias-sub">Clique para atender</p>
+            <div class="tabela pendencias">
+                <h2 class="pendencias-titulo">&#9888; Pendências</h2>
+                <div class="pendencias-clique">Clique para atender</div>
                 <ul class="pendencias-lista">
                     <li><a href="#">Questionário socioeconômico</a></li>
                     <li><a href="#">Entrega de documentos</a></li>
@@ -76,7 +77,7 @@
         </div>
 
         <div class="aviso">
-            <p class="aviso-titulo">⚠ Atenção</p>
+            <p class="aviso-titulo">&#9888; Atenção</p>
             <p>Sua frequência em <strong>Química</strong> está em <strong>67%</strong>, abaixo do mínimo exigido de 75%.</p>
         </div>
 
