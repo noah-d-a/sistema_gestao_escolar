@@ -14,139 +14,72 @@
     <main>
         <div class="cabecalho">
             <div>
-                <h1>Bem-vindo, João!</h1>
-                <p>Acompanhe seu desempenho — ano letivo 2026 · 3º Ano A</p>
+                <h1>Início</h1>
+                <p>Bem-vindo ao Sistema de Gestão Escolar — Instituto Atlas</p>
             </div>
             <div class="data">
-                <p>Segunda-feira</p>
-                <p class="data-num">03/08/2026</p>
+                <p>Hoje</p>
+                <p class="data-num">06/08/2026</p>
             </div>
         </div>
 
-    
+        <div class="duas-colunas">
+
+            <div class="tabela">
+                <h2>Informações do Aluno</h2>
+                <div class="perfil-aluno">
+                    <img src="../../imgs/fotoaluno.jpg" alt="Foto do Aluno" class="foto-aluno"/>
+                    <div class="perfil-dados">
+                        <p><strong>Nome:</strong> João Alves</p>
+                        <p><strong>RM:</strong> 2023001</p>
+                        <p><strong>Turma:</strong> 3º Ano A</p>
+                        <p><strong>Período:</strong> Manhã</p>
+                        <p><strong>Ano Letivo:</strong> 2026</p>
+                        <p><strong>Situação:</strong> <span class="badge badge-verde">Cursando</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabela">
+                <h2 class="pendencias-titulo">⚠ Pendências</h2>
+                <p class="pendencias-sub">Clique para atender</p>
+                <ul class="pendencias-lista">
+                    <li><a href="#">Questionário socioeconômico</a></li>
+                    <li><a href="#">Entrega de documentos</a></li>
+                    <li><a href="#">Rematrícula 2027</a></li>
+                </ul>
+            </div>
+
+        </div>
+
         <div class="cards">
-            <div class="card card-azul">
+            <div class="card">
                 <h3>Média Geral</h3>
                 <span>8.4</span>
-                <p class="card-sub">Bom desempenho</p>
+                <p class="card-sub">Ano letivo 2026</p>
             </div>
-            <div class="card card-verde">
+            <div class="card">
                 <h3>Frequência</h3>
                 <span>92%</span>
                 <p class="card-sub">Regular</p>
             </div>
-            <div class="card card-vermelho">
+            <div class="card">
                 <h3>Faltas</h3>
                 <span>4</span>
                 <p class="card-sub">No ano letivo</p>
             </div>
-            <div class="card card-amarelo">
+            <div class="card">
                 <h3>Questionários</h3>
                 <span>2</span>
                 <p class="card-sub">Pendentes</p>
             </div>
         </div>
 
-       
-        <div class="duas-colunas">
-
-            <div class="tabela">
-                <h2>Notas Recentes</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Disciplina</th>
-                            <th>Avaliação</th>
-                            <th>Nota</th>
-                            <th>Situação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Matemática</td>
-                            <td>Prova 1</td>
-                            <td>9.0</td>
-                            <td><span class="badge badge-verde">Aprovado</span></td>
-                        </tr>
-                        <tr>
-                            <td>Português</td>
-                            <td>Trabalho</td>
-                            <td>7.5</td>
-                            <td><span class="badge badge-verde">Aprovado</span></td>
-                        </tr>
-                        <tr>
-                            <td>História</td>
-                            <td>Prova 1</td>
-                            <td>5.0</td>
-                            <td><span class="badge badge-amarelo">Recuperação</span></td>
-                        </tr>
-                        <tr>
-                            <td>Física</td>
-                            <td>Prova 1</td>
-                            <td>8.8</td>
-                            <td><span class="badge badge-verde">Aprovado</span></td>
-                        </tr>
-                        <tr>
-                            <td>Química</td>
-                            <td>Lab 1</td>
-                            <td>6.0</td>
-                            <td><span class="badge badge-amarelo">Recuperação</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            
-            <div class="coluna-direita">
-
-               
-                <div class="tabela">
-                    <h2>Horário de Hoje</h2>
-                    <div class="horario-item">
-                        <span class="horario-hora">07:30</span>
-                        <div>
-                            <p class="horario-disc">Matemática</p>
-                            <p class="horario-sala">Sala 12</p>
-                        </div>
-                    </div>
-                    <div class="horario-item">
-                        <span class="horario-hora">09:10</span>
-                        <div>
-                            <p class="horario-disc">Português</p>
-                            <p class="horario-sala">Sala 12</p>
-                        </div>
-                    </div>
-                    <div class="horario-item">
-                        <span class="horario-hora">10:50</span>
-                        <div>
-                            <p class="horario-disc">Física</p>
-                            <p class="horario-sala">Lab de Ciências</p>
-                        </div>
-                    </div>
-                    <div class="horario-item">
-                        <span class="horario-hora">13:00</span>
-                        <div>
-                            <p class="horario-disc">História</p>
-                            <p class="horario-sala">Sala 08</p>
-                        </div>
-                    </div>
-                    <div class="horario-item">
-                        <span class="horario-hora">14:40</span>
-                        <div>
-                            <p class="horario-disc">Química</p>
-                            <p class="horario-sala">Lab de Ciências</p>
-                        </div>
-                    </div>
-                </div>
-
-                
-                <div class="aviso">
-                    <p class="aviso-titulo">⚠ Atenção</p>
-                    <p>Sua frequência em Química está em <strong>67%</strong>. O mínimo exigido é 75%.</p>
-                </div>
-
-            </div>
+        <div class="aviso">
+            <p class="aviso-titulo">⚠ Atenção</p>
+            <p>Sua frequência em <strong>Química</strong> está em <strong>67%</strong>, abaixo do mínimo exigido de 75%.</p>
         </div>
+
     </main>
 
 </body>
