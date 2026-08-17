@@ -27,8 +27,8 @@
                 </thead>
                 <tbody>
                     <tr><td>Janaina</td><td>Prova de Matemática</td><td>01/08/2026</td><td>Não lida</td></tr>
-                    <tr><td>Tia larakkk</td><td>Reunião de pais</td><td>30/07/2026</td><td>Lida</td></tr>
-                    <tr><td>Mecha</td><td>Trabalho em grupo</td><td>28/07/2026</td><td>Lida</td></tr>
+                    <tr><td>Secretaria - Lara</td><td>Reunião de pais</td><td>30/07/2026</td><td>Lida</td></tr>
+                    <tr><td>Professor Antonio Carlos</td><td>Trabalho em grupo</td><td>28/07/2026</td><td>Lida</td></tr>
                     <tr><td>Coordenação</td><td>Aviso importante</td><td>25/07/2026</td><td>Lida</td></tr>
                 </tbody>
             </table>
