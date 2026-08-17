@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .cabecalho h1 {
@@ -54,8 +54,8 @@
 
 .duas-colunas {
     display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
 .duas-colunas .tabela {
@@ -72,9 +72,10 @@
 .foto-aluno {
     width: 90px;
     height: 90px;
-    object-fit: cover;
+    object-fit: cover; /* preenche o quadrado inteiro cortando o excesso, sem distorcer */
     flex-shrink: 0;
-    border: 1px solid #cccccc;
+    /* sem border-radius de propósito -- fica quadrada, igual ao NSA */
+    border: 1px solid #e5e7eb;
 }
 
 .perfil-dados p {
@@ -93,8 +94,8 @@
     font-weight: 600;
     color: #374151;
     padding: 8px 16px;
-    background-color: #f3f4f6;
-    border-bottom: 1px solid #cccccc;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .pendencias-lista {
@@ -155,9 +156,9 @@
 .aviso {
     background-color: #fffbeb;
     border-left: 4px solid #f59e0b;
-    border-radius: 3px;
+    border-radius: 6px;
     padding: 12px 16px;
-    margin-top: 12px;
+    margin-top: 14px;
 }
 
 .aviso-titulo {
@@ -182,14 +183,15 @@
 }
 
 .select-bimestre {
-    border: 1px solid #cccccc;
-    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
     padding: 7px 12px;
     font-size: 0.84rem;
     font-family: 'Inter', sans-serif;
     color: #374151;
     outline: none;
     cursor: pointer;
+    background-color: #ffffff;
 }
 
 .select-bimestre:focus {
