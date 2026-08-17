@@ -8,24 +8,27 @@
 
 body {
     font-family: 'Inter', sans-serif;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: 64px 1fr;
+    grid-template-areas:
+        "topbar topbar"
+        "menu   main";
+    min-height: 100vh;
     background-color: #f2f2f2;
 }
 
-/* ======================================================
-   BARRA SUPERIOR (topbar)
-   Fica sozinha, ocupando 100% da largura, por cima de tudo.
-   ====================================================== */
+/* ===== BARRA SUPERIOR ===== */
 
 #topbar {
+    grid-area: topbar;
     display: flex;
     align-items: center;
     justify-content: space-between;
     background-color: #ffffff;
-    padding: 12px 28px;
-    /* sombra leve embaixo da barra, em vez de uma borda seca */
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    position: relative; /* garante que a sombra apareça por cima do conteúdo abaixo */
-    z-index: 10;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 #topbar-logo {
@@ -36,6 +39,7 @@ body {
 
 #topbar-logo img {
     height: 32px;
+    width: auto;
 }
 
 #topbar-logo span {
@@ -50,9 +54,13 @@ body {
     gap: 20px;
 }
 
-#topbar-usuario span {
+#topbar-usuario > span {
     font-size: 0.84rem;
     color: #4b5563;
+}
+
+#topbar-usuario strong {
+    color: #2d2d2d;
 }
 
 #sair {
@@ -64,7 +72,7 @@ body {
     font-size: 0.82rem;
     font-weight: 600;
     padding: 6px 10px;
-    border-radius: 6px;
+    border-radius: 4px;
     transition: background-color 0.15s ease;
 }
 
@@ -72,28 +80,18 @@ body {
     background-color: #fdecee;
 }
 
-#sair svg {
+#sair .menu-icon {
     width: 16px;
     height: 16px;
-}
-
-/* ======================================================
-   CORPO: menu lateral + conteúdo, lado a lado (flex)
-   ====================================================== */
-
-.corpo {
-    display: flex;
-    min-height: calc(100vh - 60px);
 }
 
 /* ===== MENU LATERAL ===== */
 
 #menu {
-    width: 230px;
+    grid-area: menu;
     background-color: #ffffff;
-    padding: 18px 12px;
-    /* sombra sutil do lado direito, no lugar da borda reta */
-    box-shadow: 1px 0 4px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid #e5e7eb;
+    padding: 16px 12px;
 }
 
 #menu ul {
@@ -101,7 +99,7 @@ body {
 }
 
 #menu ul li {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 #menu ul li a {
@@ -114,18 +112,16 @@ body {
     border-radius: 6px;
     font-size: 0.875rem;
     font-weight: 500;
-    /* borda esquerda invisível por padrão -- some quando não tá ativo */
     border-left: 3px solid transparent;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* o ícone SVG herda a cor do texto do link (currentColor),
-   então só precisamos trocar a cor do link pra mudar o ícone junto */
-#menu ul li a svg {
+#menu ul li a .menu-icon {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
     color: #9ca3af;
+    transition: color 0.15s ease;
 }
 
 #menu ul li a:hover {
@@ -133,27 +129,31 @@ body {
     color: #2d2d2d;
 }
 
-#menu ul li a:hover svg {
+#menu ul li a:hover .menu-icon {
     color: #7B1F2E;
 }
 
-/* classe "ativo" -- você mesmo escreve ela na página certa (ver menu_aluno.php) */
-#menu ul li a.ativo {
+#menu ul li.ativo a {
     background-color: #fdecee;
     color: #7B1F2E;
     font-weight: 700;
     border-left: 3px solid #7B1F2E;
 }
 
-#menu ul li a.ativo svg {
+#menu ul li.ativo a .menu-icon {
     color: #7B1F2E;
+}
+
+#menu ul li a p {
+    font-size: 0.875rem;
 }
 
 /* ===== CONTEÚDO PRINCIPAL ===== */
 
 main {
-    flex: 1;
+    grid-area: main;
     padding: 24px 28px;
+    background-color: #f2f2f2;
 }
 
 main h1 {
@@ -177,11 +177,11 @@ main > p {
 
 .card {
     background-color: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 14px 16px;
     flex: 1;
-    /* sombra no lugar de borda -- dá profundidade sem pesar */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .card h3 {
@@ -200,10 +200,11 @@ main > p {
 
 .tabela {
     background-color: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden; /* corta os cantos do header (h2) pra seguirem o arredondado */
+    overflow: hidden;
     margin-bottom: 14px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .tabela h2 {
