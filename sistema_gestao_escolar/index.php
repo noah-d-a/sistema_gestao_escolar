@@ -39,8 +39,8 @@
 
       if (perfil === 'Aluno')            window.location.href = 'html/aluno/inicio_aluno.php';
       else if (perfil === 'Professor')   window.location.href = 'html/professor/inicio_professor.php';
-      else if (perfil === 'Coordenação') window.location.href = 'html/coordenacao/inicio_coordenacao.php';
-      else if (perfil === 'Secretaria')  window.location.href = 'html/secretaria/inicio_secretaria.php';
+      else if (perfil === 'Coordenação') window.location.href = 'php/coordenacao/inicio_coordenacao.php';
+      else if (perfil === 'Secretaria')  window.location.href = 'php/secretaria/inicio_secretaria.php';
       else alert('Selecione um perfil para continuar.');
     }
   </script>
