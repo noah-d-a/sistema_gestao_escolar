@@ -72,9 +72,8 @@
 .foto-aluno {
     width: 90px;
     height: 90px;
-    object-fit: cover; /* preenche o quadrado inteiro cortando o excesso, sem distorcer */
+    object-fit: cover; 
     flex-shrink: 0;
-    /* sem border-radius de propósito -- fica quadrada, igual ao NSA */
     border: 1px solid #e5e7eb;
 }
 
