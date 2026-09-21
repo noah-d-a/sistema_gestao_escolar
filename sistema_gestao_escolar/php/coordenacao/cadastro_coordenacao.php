@@ -1,3 +1,23 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Coordenação');
+
+$id_coordenador = $_SESSION['id_usuario'];
+
+// Buscar dados do coordenador
+$sql = "SELECT * FROM usuario WHERE id_usuario = ?";
+$stmt = $conexao->prepare($sql);
+$stmt->bind_param("i", $id_coordenador);
+$stmt->execute();
+$result = $stmt->get_result();
+$coordenador = $result->fetch_assoc();
+$stmt->close();
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -73,61 +93,55 @@
 
     <main>
         <section class="topo">
-            <h1>Cadastro administrativo</h1>
+            <h1>Meu Perfil</h1>
         </section>
 
         <section class="box">
-            <form>
+            <div style="background: #edf5ff; color: #17477c; padding: 10px; border-radius: 5px; margin-bottom: 15px;">Este cadastro é somente para consulta.</div>
+            <div class="formulario">
                 <div class="campo">
                     <label for="perfil">Perfil</label>
-                    <select id="perfil">
-                        <option>Aluno</option>
-                        <option>Professor</option>
-                        <option>Coordenação</option>
-                        <option>Secretaria</option>
+                    <select id="perfil" disabled>
+                        <option><?php echo htmlspecialchars($coordenador['perfil'] ?? 'Coordenação'); ?></option>
                     </select>
                 </div>
 
                 <div class="campo">
                     <label for="nome">Nome completo</label>
-                    <input id="nome" type="text" value="Daniela Costa Ribeiro" />
+                    <input id="nome" type="text" value="<?php echo htmlspecialchars($coordenador['nome'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="cpf">CPF</label>
-                    <input id="cpf" type="text" value="321.442.196-07" />
+                    <input id="cpf" type="text" value="<?php echo htmlspecialchars($coordenador['cpf'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="rg">RG</label>
-                    <input id="rg" type="text" value="39.118.247-0" />
+                    <input id="rg" type="text" value="<?php echo htmlspecialchars($coordenador['rg'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="nascimento">Data de nascimento</label>
-                    <input id="nascimento" type="date" value="2007-10-12" />
+                    <input id="nascimento" type="date" value="<?php echo htmlspecialchars($coordenador['data_nascimento'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="telefone">Telefone</label>
-                    <input id="telefone" type="text" value="(11) 97785-2411" />
+                    <input id="telefone" type="text" value="<?php echo htmlspecialchars($coordenador['telefone'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo full">
                     <label for="email">E-mail</label>
-                    <input id="email" type="email" value="daniela.ribeiro@escolafutura.edu.br" />
+                    <input id="email" type="email" value="<?php echo htmlspecialchars($coordenador['email'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo full">
                     <label for="endereco">Endereço</label>
-                    <input id="endereco" type="text" value="Rua das Acácias, 300 - Jardim Monte Verde, São Paulo/SP" />
+                    <input id="endereco" type="text" value="<?php echo htmlspecialchars($coordenador['endereco'] ?? ''); ?>" disabled />
                 </div>
 
-                <div class="botoes">
-                    <button class="principal" type="button">Salvar cadastro</button>
-                    <button class="secundario" type="reset">Limpar</button>
-                </div>
-            </form>
+            </div>
         </section>
     </main>
 </body>

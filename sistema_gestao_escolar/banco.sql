@@ -82,7 +82,7 @@ CREATE TABLE `nota` (
     `id_matricula` INT NOT NULL,
     `id_turma_disciplina` INT NOT NULL,
     `avaliacao` VARCHAR(100),
-    `nota` DECIMAL(4,2) NOT NULL,
+    `nota` DECIMAL(4,2) NULL,
     `data_lancamento` DATE,
     FOREIGN KEY (`id_matricula`) REFERENCES `matricula`(`id_matricula`),
     FOREIGN KEY (`id_turma_disciplina`) REFERENCES `turma_disciplina`(`id_turma_disciplina`)
@@ -123,4 +123,11 @@ CREATE TABLE `resposta` (
     `resposta` TEXT NOT NULL,
     FOREIGN KEY (`id_pergunta`) REFERENCES `pergunta`(`id_pergunta`),
     FOREIGN KEY (`id_usuario`) REFERENCES `usuario`(`id_usuario`)
+);
+
+CREATE TABLE `alternativa` (
+    `id_alternativa` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_pergunta` INT NOT NULL,
+    `texto` VARCHAR(255) NOT NULL,
+    FOREIGN KEY (`id_pergunta`) REFERENCES `pergunta`(`id_pergunta`)
 );

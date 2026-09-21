@@ -86,11 +86,12 @@
         <span>Instituto Atlas</span>
     </div>
     <ul>
-        <li><a href="../../html/professor/inicio_professor.php">Início</a></li>
-        <li><a href="../../html/professor/notas_professor.php">Notas</a></li>
-        <li><a href="../../html/professor/presenca_professor.php">Presença</a></li>
-        <li><a href="../../html/professor/horario_professor.php">Horário</a></li>
-        <li><a href="../../html/professor/chamada_professor.php">Chamada</a></li>
-        <li><a href="../../html/professor/mensagens_professor.php">Mensagens</a></li>
+        <li><a href="inicio_professor.php">Início</a></li>
+        <li><a href="cadastro_professor.php">Cadastro</a></li>
+        <li><a href="notas_professor.php">Notas</a></li>
+        <li><a href="presenca_professor.php">Presença</a></li>
+        <li><a href="horario_professor.php">Horário</a></li>
+        <li><a href="chamada_professor.php">Chamada</a></li>
+        <li><a href="mensagens_professor.php">Mensagens</a></li>
     </ul>
 </nav>

@@ -12,9 +12,9 @@
         left: 0;
         width: 230px;
         height: 100vh;
-        background: linear-gradient(180deg, #182b4d 0%, #223d67 100%);
+        background: linear-gradient(180deg, #0b1f3a 0%, #123660 100%);
         color: #fff;
-        box-shadow: 3px 0 18px rgba(24, 43, 77, 0.25);
+        box-shadow: 3px 0 18px rgba(11, 31, 58, 0.25);
         padding: 18px 14px;
         box-sizing: border-box;
     }
@@ -44,8 +44,8 @@
 
     #menu ul {
         list-style: none;
-        padding: 0;
         margin: 0;
+        padding: 0;
     }
 
     #menu li {
@@ -82,7 +82,7 @@
 <nav id="menu">
     <div class="brand">
         <img src="../../imgs/logo.png" alt="Instituto Atlas" />
-        <span>Coordenação</span>
+        <span>Instituto Atlas</span>
     </div>
     <ul>
         <li><a href="inicio_coordenacao.php">Início</a></li>

@@ -1,3 +1,62 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Secretaria');
+
+// Contar alunos
+$sql = "SELECT COUNT(*) as total FROM usuario WHERE perfil = 'Aluno' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_alunos = $row['total'] ?? 0;
+$stmt->close();
+
+// Contar professores
+$sql = "SELECT COUNT(*) as total FROM usuario WHERE perfil = 'Professor' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_professores = $row['total'] ?? 0;
+$stmt->close();
+
+// Contar turmas
+$sql = "SELECT COUNT(*) as total FROM turma";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_turmas = $row['total'] ?? 0;
+$stmt->close();
+
+// Contar mensagens não lidas
+$id_secretario = $_SESSION['id_usuario'];
+$nome_secretario = $_SESSION['nome'] ?? 'Secretaria';
+$sql = "SELECT nome FROM usuario WHERE id_usuario = ? AND perfil = 'Secretaria' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->bind_param("i", $id_secretario);
+$stmt->execute();
+$result = $stmt->get_result();
+$usuario_logado = $result->fetch_assoc();
+if ($usuario_logado) {
+    $nome_secretario = $usuario_logado['nome'];
+    $_SESSION['nome'] = $nome_secretario;
+}
+$stmt->close();
+
+$sql = "SELECT COUNT(*) as total FROM mensagem WHERE destinatario = ? AND lida = 0";
+$stmt = $conexao->prepare($sql);
+$stmt->bind_param("i", $id_secretario);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$mensagens_nao_lidas = $row['total'] ?? 0;
+$stmt->close();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -117,58 +176,25 @@
 
     <main>
         <section class="topo">
-            <div>
-                <span>Área administrativa</span>
-                <h1>Dashboard da Secretaria</h1>
-            </div>
-            <div style="font-size: 0.9rem; opacity: 0.9;">Hoje: 16/08/2026</div>
+            <h1>Bem-vindo, <?php echo htmlspecialchars($nome_secretario); ?>!</h1>
         </section>
 
         <section class="painel">
             <div class="box">
                 <div class="titulo">Alunos ativos</div>
-                <div class="valor">1.248</div>
+                <div class="valor"><?php echo number_format($total_alunos, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Professores</div>
-                <div class="valor">86</div>
+                <div class="valor"><?php echo number_format($total_professores, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Turmas</div>
-                <div class="valor">32</div>
+                <div class="valor"><?php echo number_format($total_turmas, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Mensagens pendentes</div>
-                <div class="valor">18</div>
-            </div>
-        </section>
-
-        <section class="grid">
-            <div class="panel">
-                <h2>Atividades recentes</h2>
-                <ul class="lista">
-                    <li><span>Cadastro de Ana Clara Santos</span><span class="status">Concluído</span></li>
-                    <li><span>Alteração de dados da turma 3°A</span><span class="status">Concluído</span></li>
-                    <li><span>Questionário de acompanhamento enviado</span><span class="status atencao">Pendente</span></li>
-                    <li><span>Reunião de coordenação agendada</span><span class="status">Concluído</span></li>
-                    <li><span>Frequência semanal consolidada</span><span class="status">Concluído</span></li>
-                </ul>
-            </div>
-
-            <div class="panel">
-                <h2>Mensagens principais</h2>
-                <div class="mensagem">
-                    <strong>Coordenação</strong>
-                    Solicitação de atualização do quadro de horários do 2° ano.
-                </div>
-                <div class="mensagem">
-                    <strong>Professor</strong>
-                    Lançamento de notas do terceiro bimestre concluído.
-                </div>
-                <div class="mensagem">
-                    <strong>Aluno</strong>
-                    Pedido de segunda via do boletim escolar.
-                </div>
+                <div class="valor"><?php echo $mensagens_nao_lidas; ?></div>
             </div>
         </section>
     </main>

@@ -1,3 +1,11 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Secretaria');
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -66,42 +74,42 @@
 
     <main>
         <section class="cabecalho">
-            <h1>Cadastros do sistema</h1>
+            <h1>Cadastrar usuários ou componentes</h1>
         </section>
 
         <section class="lista">
-            <a class="item" href="acoes_secretaria.php?vitima=Aluno">
-                <div class="topo">Categoria</div>
+            <a class="item" href="acoes_secretaria.php?tipo=aluno">
+                <div class="topo">Usuário</div>
                 <h3>Alunos</h3>
-                <p>Consultar matrícula, turma, frequência e dados pessoais.</p>
+                <p>Matrícula, turma, frequência e dados pessoais.</p>
             </a>
 
-            <a class="item" href="acoes_secretaria.php?vitima=Professor">
-                <div class="topo">Categoria</div>
+            <a class="item" href="acoes_secretaria.php?tipo=professor">
+                <div class="topo">Usuário</div>
                 <h3>Professores</h3>
                 <p>Dados de docentes, disciplinas, horários e carga horária.</p>
             </a>
 
-            <a class="item" href="acoes_secretaria.php?vitima=Coordenacao">
-                <div class="topo">Categoria</div>
+            <a class="item" href="acoes_secretaria.php?tipo=coordenacao">
+                <div class="topo">Usuário</div>
                 <h3>Coordenação</h3>
                 <p>Gestores, supervisores e responsáveis pela instituição.</p>
             </a>
 
-            <a class="item" href="acoes_secretaria.php?vitima=Secretaria">
-                <div class="topo">Categoria</div>
+            <a class="item" href="acoes_secretaria.php?tipo=secretaria">
+                <div class="topo">Usuário</div>
                 <h3>Secretaria</h3>
                 <p>Funcionários administrativos e processos internos.</p>
             </a>
 
-            <a class="item" href="acoes_secretaria.php?vitima=Turma">
-                <div class="topo">Estrutura escolar</div>
+            <a class="item" href="acoes_secretaria.php?tipo=turma">
+                <div class="topo">Componente</div>
                 <h3>Turmas</h3>
                 <p>Manter turma, turno, série e organização letiva.</p>
             </a>
 
-            <a class="item" href="acoes_secretaria.php?vitima=Disciplina">
-                <div class="topo">Estrutura escolar</div>
+            <a class="item" href="acoes_secretaria.php?tipo=disciplina">
+                <div class="topo">Componente</div>
                 <h3>Disciplinas</h3>
                 <p>Controle de matérias e carga horária por turma.</p>
             </a>

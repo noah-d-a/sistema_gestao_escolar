@@ -1,3 +1,57 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Secretaria');
+
+$id_secretario = $_SESSION['id_usuario'];
+$mensagem = '';
+
+$sql = "SELECT COUNT(*) AS total FROM usuario WHERE perfil = 'Secretaria' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_secretarias = (int) ($result->fetch_assoc()['total'] ?? 0);
+$stmt->close();
+$pode_editar = $total_secretarias <= 1;
+
+// Buscar dados do secretário
+$sql = "SELECT * FROM usuario WHERE id_usuario = ?";
+$stmt = $conexao->prepare($sql);
+$stmt->bind_param("i", $id_secretario);
+$stmt->execute();
+$result = $stmt->get_result();
+$secretario = $result->fetch_assoc();
+$stmt->close();
+
+// Se enviar formulário
+if (isset($_POST['salvar']) && $pode_editar) {
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefone = trim($_POST['telefone'] ?? '');
+    $endereco = trim($_POST['endereco'] ?? '');
+    
+    if (!empty($nome) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $sql = "UPDATE usuario SET nome = ?, email = ?, telefone = ?, endereco = ? WHERE id_usuario = ?";
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param("ssssi", $nome, $email, $telefone, $endereco, $id_secretario);
+        
+        if ($stmt->execute()) {
+            $mensagem = '<div style="background: #efe; color: #363; padding: 10px; border-radius: 5px; margin-bottom: 15px;">Cadastro atualizado com sucesso!</div>';
+            $_SESSION['nome'] = $nome;
+            $secretario['nome'] = $nome;
+            $secretario['email'] = $email;
+            $secretario['telefone'] = $telefone;
+            $secretario['endereco'] = $endereco;
+        }
+        $stmt->close();
+    } else {
+        $mensagem = '<div style="background: #fee; color: #9d1c1c; padding: 10px; border-radius: 5px; margin-bottom: 15px;">Informe um nome e um e-mail válido.</div>';
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -102,73 +156,55 @@
 
     <main>
         <section class="topo">
-            <h1>Cadastro do usuário</h1>
+            <h1>Seu cadastro</h1>
         </section>
 
         <section class="box">
-            <form>
-                <div class="campo">
-                    <label for="perfil">Perfil</label>
-                    <select id="perfil">
-                        <option>Aluno</option>
-                        <option>Professor</option>
-                        <option>Coordenação</option>
-                        <option>Secretaria</option>
-                    </select>
-                </div>
-
+            <?php echo $mensagem; ?>
+            <?php if (!$pode_editar): ?>
+                <div style="background: #fff4e5; color: #8a5a00; padding: 10px; border-radius: 5px; margin-bottom: 15px;">Este cadastro é somente para visualização. Outro membro da Secretaria deve realizar alterações.</div>
+            <?php endif; ?>
+            <form method="POST">
                 <div class="campo">
                     <label for="nome">Nome completo</label>
-                    <input id="nome" type="text" value="Sabrina Lopes Martins" />
+                    <input id="nome" name="nome" type="text" value="<?php echo htmlspecialchars($secretario['nome'] ?? ''); ?>" <?php echo $pode_editar ? '' : 'disabled'; ?> />
                 </div>
 
                 <div class="campo">
                     <label for="cpf">CPF</label>
-                    <input id="cpf" type="text" value="765.432.110-88" />
+                    <input id="cpf" type="text" value="<?php echo htmlspecialchars($secretario['cpf'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="rg">RG</label>
-                    <input id="rg" type="text" value="22.456.781-K" />
+                    <input id="rg" type="text" value="<?php echo htmlspecialchars($secretario['rg'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="nascimento">Data de nascimento</label>
-                    <input id="nascimento" type="date" value="2007-12-20" />
+                    <input id="nascimento" type="date" value="<?php echo htmlspecialchars($secretario['data_nascimento'] ?? ''); ?>" disabled />
                 </div>
 
                 <div class="campo">
                     <label for="telefone">Telefone</label>
-                    <input id="telefone" type="text" value="(11) 98888-1122" />
+                    <input id="telefone" name="telefone" type="text" value="<?php echo htmlspecialchars($secretario['telefone'] ?? ''); ?>" <?php echo $pode_editar ? '' : 'disabled'; ?> />
                 </div>
 
                 <div class="campo full">
                     <label for="email">E-mail</label>
-                    <input id="email" type="email" value="sabrina.martins@escolafutura.edu.br" />
+                    <input id="email" name="email" type="email" value="<?php echo htmlspecialchars($secretario['email'] ?? ''); ?>" <?php echo $pode_editar ? '' : 'disabled'; ?> />
                 </div>
 
                 <div class="campo full">
                     <label for="endereco">Endereço</label>
-                    <input id="endereco" type="text" value="Avenida das Flores, 410 - Jardim Paulista, São Paulo/SP" />
-                </div>
-
-                <div class="campo">
-                    <label for="turma">Turma / setor</label>
-                    <input id="turma" type="text" value="1°A / Secretaria" />
-                </div>
-
-                <div class="campo">
-                    <label for="status">Status</label>
-                    <select id="status">
-                        <option selected>Ativo</option>
-                        <option>Inativo</option>
-                        <option>Em análise</option>
-                    </select>
+                    <input id="endereco" name="endereco" type="text" value="<?php echo htmlspecialchars($secretario['endereco'] ?? ''); ?>" <?php echo $pode_editar ? '' : 'disabled'; ?> />
                 </div>
 
                 <div class="botoes">
-                    <button class="principal" type="button">Salvar cadastro</button>
-                    <button class="secundario" type="reset">Limpar</button>
+                    <?php if ($pode_editar): ?>
+                        <button class="principal" type="submit" name="salvar" value="1">Salvar cadastro</button>
+                        <button class="secundario" type="reset">Limpar</button>
+                    <?php endif; ?>
                 </div>
             </form>
         </section>

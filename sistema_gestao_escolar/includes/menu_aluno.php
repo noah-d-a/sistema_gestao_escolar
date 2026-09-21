@@ -85,10 +85,12 @@
         <span>Instituto Atlas</span>
     </div>
     <ul>
-        <li><a href="../aluno/inicio_aluno.php">Início</a></li>
-        <li><a href="../aluno/boletim_aluno.php">Boletim</a></li>
-        <li><a href="../aluno/presenca_aluno.php">Presença</a></li>
-        <li><a href="../aluno/horario_aluno.php">Horário</a></li>
-        <li><a href="../aluno/mensagens_aluno.php">Mensagens</a></li>
+        <li><a href="inicio_aluno.php">Início</a></li>
+        <li><a href="cadastro_aluno.php">Cadastro</a></li>
+        <li><a href="boletim_aluno.php">Boletim</a></li>
+        <li><a href="presenca_aluno.php">Presença</a></li>
+        <li><a href="horario_aluno.php">Horário</a></li>
+        <li><a href="mensagens_aluno.php">Mensagens</a></li>
+        <li><a href="questionarios_aluno.php">Questionários</a></li>
     </ul>
 </nav>

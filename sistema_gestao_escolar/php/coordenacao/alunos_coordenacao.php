@@ -1,3 +1,63 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Coordenação');
+
+$id_turma = intval($_GET['turma'] ?? $_POST['turma'] ?? 0);
+
+// Buscar turmas
+$turmas = [];
+$sql = "SELECT id_turma, nome FROM turma ORDER BY nome";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $turmas[] = $row;
+}
+$stmt->close();
+
+// Buscar alunos da turma selecionada
+$alunos = [];
+$turma_nome = '';
+
+if ($id_turma > 0) {
+    $sql = "SELECT t.nome AS turma_nome FROM turma t WHERE t.id_turma = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $id_turma);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $t = $result->fetch_assoc();
+    $turma_nome = $t['turma_nome'] ?? '';
+    $stmt->close();
+    
+    $sql = "SELECT m.rm, u.nome, u.id_usuario,
+                   AVG(n.nota) as media_notas,
+                   CASE 
+                       WHEN COUNT(DISTINCT f.data_aula) = 0 THEN 100
+                       ELSE ROUND(SUM(CASE WHEN f.presente = 1 THEN 1 ELSE 0 END) / COUNT(DISTINCT f.data_aula) * 100)
+                   END as frequencia_perc
+            FROM matricula m
+            JOIN usuario u ON m.id_aluno = u.id_usuario
+            LEFT JOIN nota n ON m.id_matricula = n.id_matricula
+            LEFT JOIN frequencia f ON m.id_matricula = f.id_matricula
+            WHERE m.id_turma = ?
+            GROUP BY m.id_matricula, m.rm, u.nome, u.id_usuario
+            ORDER BY u.nome";
+    
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $id_turma);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $alunos[] = $row;
+    }
+    $stmt->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -66,34 +126,41 @@
 
     <main>
         <section class="header">
-            <h1>Alunos</h1>
+            <h1>Alunos<?php echo $id_turma > 0 ? ' — ' . htmlspecialchars($turma_nome) : ''; ?></h1>
         </section>
+        
+        <div style="margin-bottom: 20px;">
+            <form method="GET">
+                <label style="font-size: 0.78rem; font-weight: bold; display: block; margin-bottom: 4px;">Filtrar por turma</label>
+                <select name="turma" onchange="this.form.submit();" style="border: 1px solid #dfe9f6; border-radius: 8px; padding: 8px 12px; font-size: 0.84rem; width: 250px;">
+                    <option value="">Selecione uma turma</option>
+                    <?php foreach ($turmas as $turma): ?>
+                        <option value="<?php echo $turma['id_turma']; ?>" <?php echo $id_turma == $turma['id_turma'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($turma['nome']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
 
-        <section class="card-list">
-            <article class="aluno">
-                <div class="nome">João Miguel Cavalcante</div>
-                <div class="dados">RM: 24218<br>Turma: 1°A<br>Frequência: 97%<br>Nota média: 8,6</div>
-                <span class="badge">Ativo</span>
-            </article>
-
-            <article class="aluno">
-                <div class="nome">Maria Eduarda Silva</div>
-                <div class="dados">RM: 24227<br>Turma: 1°A<br>Frequência: 95%<br>Nota média: 8,9</div>
-                <span class="badge">Ativo</span>
-            </article>
-
-            <article class="aluno">
-                <div class="nome">Pedro Henrique Oliveira</div>
-                <div class="dados">RM: 24233<br>Turma: 2°A<br>Frequência: 93%<br>Nota média: 7,8</div>
-                <span class="badge">Ativo</span>
-            </article>
-
-            <article class="aluno">
-                <div class="nome">Ana Clara Santos</div>
-                <div class="dados">RM: 24249<br>Turma: 3°B<br>Frequência: 96%<br>Nota média: 9,1</div>
-                <span class="badge">Ativo</span>
-            </article>
-        </section>
+        <?php if ($id_turma > 0 && count($alunos) > 0): ?>
+            <section class="card-list">
+                <?php foreach ($alunos as $aluno): ?>
+                    <article class="aluno">
+                        <div class="nome"><?php echo htmlspecialchars($aluno['nome']); ?></div>
+                        <div class="dados">
+                            RM: <?php echo htmlspecialchars($aluno['rm']); ?><br>
+                            Turma: <?php echo htmlspecialchars($turma_nome); ?><br>
+                            Frequência: <?php echo round($aluno['frequencia_perc'] ?? 0); ?>%<br>
+                            Nota média: <?php echo round($aluno['media_notas'] ?? 0, 1); ?>
+                        </div>
+                        <span class="badge">Ativo</span>
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php elseif ($id_turma > 0): ?>
+            <p style="color: #666;">Nenhum aluno encontrado nesta turma.</p>
+        <?php endif; ?>
     </main>
 </body>
 </html>

@@ -1,3 +1,59 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Coordenação');
+
+$id_coordenador = $_SESSION['id_usuario'];
+
+// Contar alunos
+$sql = "SELECT COUNT(*) as total FROM usuario WHERE perfil = 'Aluno' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_alunos = $row['total'] ?? 0;
+$stmt->close();
+
+// Contar professores
+$sql = "SELECT COUNT(*) as total FROM usuario WHERE perfil = 'Professor' AND ativo = 1";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_professores = $row['total'] ?? 0;
+$stmt->close();
+
+// Contar turmas
+$sql = "SELECT COUNT(*) as total FROM turma";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$total_turmas = $row['total'] ?? 0;
+$stmt->close();
+
+// Calcular frequência geral
+$sql = "SELECT AVG(frequencia_perc) as freq_media FROM (
+    SELECT 
+        m.id_matricula,
+        CASE 
+            WHEN COUNT(DISTINCT f.data_aula) = 0 THEN 100
+            ELSE ROUND(SUM(CASE WHEN f.presente = 1 THEN 1 ELSE 0 END) / COUNT(DISTINCT f.data_aula) * 100)
+        END as frequencia_perc
+    FROM matricula m
+    LEFT JOIN frequencia f ON m.id_matricula = f.id_matricula
+    GROUP BY m.id_matricula
+) as freq_alunos";
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$freq_geral = round($row['freq_media'] ?? 100);
+$stmt->close();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -101,39 +157,19 @@
         <section class="painel">
             <div class="box">
                 <div class="titulo">Alunos matriculados</div>
-                <div class="valor">1.248</div>
+                <div class="valor"><?php echo number_format($total_alunos, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Professores</div>
-                <div class="valor">86</div>
+                <div class="valor"><?php echo number_format($total_professores, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Turmas ativas</div>
-                <div class="valor">32</div>
+                <div class="valor"><?php echo number_format($total_turmas, 0, ',', '.'); ?></div>
             </div>
             <div class="box">
                 <div class="titulo">Frequência geral</div>
-                <div class="valor">96%</div>
-            </div>
-        </section>
-
-        <section class="grid">
-            <div class="panel">
-                <h2>Resumo da semana</h2>
-                <ul class="lista">
-                    <li><span>Reunião de acompanhamento da 1° série</span><span class="badge">OK</span></li>
-                    <li><span>Lançamento de notas do 3° bimestre</span><span class="badge">OK</span></li>
-                    <li><span>Planejamento de prova trimestral</span><span class="badge">OK</span></li>
-                    <li><span>Solicitação de material escolar</span><span class="badge alerta">Pendente</span></li>
-                    <li><span>Consolidação de frequência</span><span class="badge">OK</span></li>
-                </ul>
-            </div>
-
-            <div class="panel">
-                <h2>Observações da coordenação</h2>
-                <p>Há necessidade de reforço no acompanhamento dos alunos com presença abaixo de 85%.</p>
-                <p>Turma 3°B apresenta maior quantidade de pendências em Matemática e Física.</p>
-                <p>Calendário de avaliações será revisado na próxima reunião pedagógica.</p>
+                <div class="valor"><?php echo $freq_geral; ?>%</div>
             </div>
         </section>
     </main>

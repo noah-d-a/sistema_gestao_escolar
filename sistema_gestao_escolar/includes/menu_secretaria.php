@@ -44,8 +44,8 @@
 
     #menu ul {
         list-style: none;
-        padding: 0;
         margin: 0;
+        padding: 0;
     }
 
     #menu li {
@@ -82,12 +82,14 @@
 <nav id="menu">
     <div class="brand">
         <img src="../../imgs/logo.png" alt="Instituto Atlas" />
-        <span>Secretaria</span>
+        <span>Instituto Atlas</span>
     </div>
     <ul>
         <li><a href="inicio_secretaria.php">Início</a></li>
         <li><a href="cadastro_secretaria.php">Cadastro</a></li>
         <li><a href="cadastros_secretaria.php">Cadastros</a></li>
+        <li><a href="relacoes_secretaria.php">Relações</a></li>
+        <li><a href="editar_horario_secretaria.php">Horários</a></li>
         <li><a href="questionarios_secretaria.php">Questionários</a></li>
         <li><a href="mensagens_secretaria.php">Mensagens</a></li>
     </ul>

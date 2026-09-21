@@ -1,3 +1,61 @@
+<?php
+session_start();
+require '../../includes/conexao.php';
+require '../../includes/verificar_sessao.php';
+
+verificar_perfil('Coordenação');
+
+// Buscar professores e suas disciplinas
+$sql = "SELECT DISTINCT u.id_usuario, u.nome, d.nome as disciplina, t.nome as turma, h.hora_inicio, h.hora_fim
+        FROM usuario u
+        LEFT JOIN turma_disciplina td ON u.id_usuario = td.id_professor
+        LEFT JOIN disciplina d ON td.id_disciplina = d.id_disciplina
+        LEFT JOIN turma t ON td.id_turma = t.id_turma
+        LEFT JOIN horario h ON h.id_turma_disciplina = td.id_turma_disciplina
+        WHERE u.perfil = 'Professor' AND u.ativo = 1
+        ORDER BY u.nome, d.nome";
+
+$stmt = $conexao->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$professores = [];
+while ($row = $result->fetch_assoc()) {
+    $prof_id = $row['id_usuario'];
+    if (!isset($professores[$prof_id])) {
+        $professores[$prof_id] = [
+            'id' => $prof_id,
+            'nome' => $row['nome'],
+            'disciplinas' => [],
+            'turmas' => [],
+            'horarios' => []
+        ];
+    }
+    
+    if ($row['disciplina']) {
+        if (!in_array($row['disciplina'], $professores[$prof_id]['disciplinas'])) {
+            $professores[$prof_id]['disciplinas'][] = $row['disciplina'];
+        }
+    }
+    
+    if ($row['turma']) {
+        if (!in_array($row['turma'], $professores[$prof_id]['turmas'])) {
+            $professores[$prof_id]['turmas'][] = $row['turma'];
+        }
+    }
+    
+    if ($row['hora_inicio'] && $row['hora_fim']) {
+        $horario = substr($row['hora_inicio'], 0, 5) . ' às ' . substr($row['hora_fim'], 0, 5);
+        if (!in_array($horario, $professores[$prof_id]['horarios'])) {
+            $professores[$prof_id]['horarios'][] = $horario;
+        }
+    }
+}
+$stmt->close();
+
+$professores_list = array_values($professores);
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -59,27 +117,28 @@
             <h1>Professores</h1>
         </section>
 
-        <section class="lista">
-            <article class="professor">
-                <div class="nome">Maria da Silva Santana</div>
-                <div class="dados">Disciplina: Português<br>Turma: 1°A e 2°A<br>Horário: 08:00 às 10:30</div>
-            </article>
-
-            <article class="professor">
-                <div class="nome">Alberto Adriano Antunes</div>
-                <div class="dados">Disciplina: Matemática<br>Turma: 2°A e 3°B<br>Horário: 10:40 às 12:10</div>
-            </article>
-
-            <article class="professor">
-                <div class="nome">Flávia Maria Alberta</div>
-                <div class="dados">Disciplina: História<br>Turma: 1°B e 3°A<br>Horário: 13:00 às 15:00</div>
-            </article>
-
-            <article class="professor">
-                <div class="nome">Gabriel Santos Silva</div>
-                <div class="dados">Disciplina: Física<br>Turma: 3°B<br>Horário: 15:10 às 16:30</div>
-            </article>
-        </section>
+        <?php if (count($professores_list) > 0): ?>
+            <section class="lista">
+                <?php foreach ($professores_list as $prof): ?>
+                    <article class="professor">
+                        <div class="nome"><a href="professor_coordenacao.php?id=<?php echo (int) $prof['id']; ?>" style="color: inherit; text-decoration: none;"><?php echo htmlspecialchars($prof['nome']); ?></a></div>
+                        <div class="dados">
+                            <?php if (count($prof['disciplinas']) > 0): ?>
+                                Disciplina: <?php echo htmlspecialchars(implode(', ', array_slice($prof['disciplinas'], 0, 2))); ?><br>
+                            <?php endif; ?>
+                            <?php if (count($prof['turmas']) > 0): ?>
+                                Turma: <?php echo htmlspecialchars(implode(', ', array_slice($prof['turmas'], 0, 3))); ?><br>
+                            <?php endif; ?>
+                            <?php if (count($prof['horarios']) > 0): ?>
+                                Horário: <?php echo htmlspecialchars($prof['horarios'][0]); ?>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php else: ?>
+            <p style="color: #666;">Nenhum professor encontrado.</p>
+        <?php endif; ?>
     </main>
 </body>
 </html>
