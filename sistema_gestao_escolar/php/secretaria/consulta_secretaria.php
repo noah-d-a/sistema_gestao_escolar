@@ -83,26 +83,9 @@ if ($tipo === 'professor') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secretaria | Consultar <?php echo htmlspecialchars($titulo ?: 'Registros'); ?></title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-        main { max-width: 1100px; margin: 32px auto; padding: 0 20px 40px; }
-        .header { background: linear-gradient(135deg, #103b6e, #1f8ad9); color: white; border-radius: 18px; padding: 28px 30px; margin-bottom: 24px; }
-        .header h1 { margin: 0; font-size: 2rem; }
-        .filtros { background: white; border-radius: 14px; padding: 18px 20px; margin-bottom: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-end; }
-        .filtros label { font-size: 0.78rem; font-weight: bold; color: #26405d; display: block; }
-        .filtros input { padding: 8px 11px; border: 1px solid #dce5f0; border-radius: 8px; font-size: 0.85rem; flex: 1; }
-        .filtros button { background: #0d4a8f; color: #fff; border: none; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-weight: bold; }
-        .lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-        .item { background: white; border: 1px solid #e3ebf7; border-radius: 16px; padding: 18px 20px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04); transition: all 0.3s; }
-        .item:hover { box-shadow: 0 12px 28px rgba(15,23,42,0.12); transform: translateY(-2px); }
-        .nome { font-size: 1.05rem; font-weight: bold; color: #113d70; margin-bottom: 10px; }
-        .info { color: #5c6878; line-height: 1.7; font-size: 0.85rem; }
-        .actions { display: flex; gap: 8px; margin-top: 12px; }
-        .btn-small { flex: 1; padding: 6px 10px; border: none; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; }
-        .btn-edit { background: #4568a8; color: white; }
-        .btn-delete { background: #cc2222; color: white; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box}body{margin:0;background:#f7f8fc;color:#22243a;font-family:Inter,Arial,sans-serif}main{max-width:1140px;margin:0 auto;padding:44px 36px 75px}h1,h2{letter-spacing:-.035em}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #aaa7f8;outline-offset:2px}.header{background:transparent!important;color:#22243a!important;border-radius:0!important;padding:0!important;margin:0 0 26px!important;box-shadow:none!important}.header:before{content:'INSTITUTO ATLAS / SECRETARIA';display:block;color:#6762d8;font-size:11px;font-weight:800;letter-spacing:.13em;margin-bottom:11px}.header h1{font-size:clamp(27px,3vw,35px);margin:0;font-weight:800;line-height:1.2}.container{background:transparent;border:0;box-shadow:none;overflow:visible}.content{padding:0}.card,.filtros,.aluno,.item{background:white;border:1px solid #e7e9f1;border-radius:15px;box-shadow:0 7px 22px rgba(25,30,70,.035)}.card{padding:26px 28px;margin-bottom:18px}.card h2{font-size:15px;color:#24263b;margin:0 0 22px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.grid>div{min-width:0}label,.filtros label{display:block;font-size:12px;font-weight:700;color:#555b72;margin-bottom:8px}input,select,.filtros input,.filtros select{width:100%;min-width:0;background:#fff;border:1px solid #dfe2ed;border-radius:9px;padding:12px 13px;font:inherit;font-size:13px;color:#282b40}input:disabled{background:#f5f6fa;color:#777d8d}input:focus,select:focus{border-color:#7771df;outline:3px solid #efedff}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}button,.filtros button,.btn-small{font:inherit;font-size:12px;font-weight:700;border:0;border-radius:9px;padding:12px 17px;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}.primary,.filtros button,.btn-edit{background:#6560d8;color:white}.primary:hover,.filtros button:hover,.btn-edit:hover{background:#524dc4}.secondary{background:#eeedff;color:#5550c1}.btn-delete{background:#fff0f1;color:#bb3648}.filtros{padding:22px 24px;margin-bottom:22px}.filtros form{flex-wrap:wrap}.filtros form>div{min-width:180px}.lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:15px}.aluno,.item{padding:22px;transition:border-color .15s}.aluno:hover,.item:hover{border-color:#c8c5fa}.nome{font-size:15px;font-weight:800;color:#25283c;margin-bottom:12px;overflow-wrap:anywhere}.dados,.info{font-size:12px;line-height:1.9;color:#676c7e;overflow-wrap:anywhere}.dados strong,.info strong{color:#34394d}.btn-small{flex:1;padding:10px}.actions a{min-width:85px}@media(max-width:800px){main{padding:82px 20px 45px}}@media(max-width:560px){.grid{grid-template-columns:1fr}.card{padding:20px}.filtros{padding:18px}.lista{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
     <?php include '../../includes/menu_secretaria.php'; ?>
@@ -138,7 +121,7 @@ if ($tipo === 'professor') {
                         </div>
                         <div class="actions">
                             <a class="btn-small btn-edit" href="alterar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Editar</a>
-                            <a class="btn-small btn-delete" href="deletar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Deletar</a>
+                            <a class="btn-small btn-delete" onclick="return confirm('Deseja realmente excluir este registro?');" href="deletar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Deletar</a>
                         </div>
                     </article>
                 <?php endforeach; ?>

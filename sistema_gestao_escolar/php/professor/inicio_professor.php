@@ -2,76 +2,51 @@
 session_start();
 require '../../includes/conexao.php';
 require '../../includes/verificar_sessao.php';
-
 verificar_perfil('Professor');
-
 $id_professor = $_SESSION['id_usuario'];
 
-// Dados do professor
 $sql = "SELECT nome FROM usuario WHERE id_usuario = ?";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $id_professor);
 $stmt->execute();
-$result = $stmt->get_result();
-$prof = $result->fetch_assoc();
+$prof = $stmt->get_result()->fetch_assoc();
 $nome_prof = $prof['nome'] ?? 'Professor';
 $stmt->close();
 
-// Total de alunos
-$sql = "SELECT COUNT(DISTINCT m.id_aluno) as total_alunos
-        FROM matricula m
-        JOIN turma_disciplina td ON m.id_turma = td.id_turma
-        WHERE td.id_professor = ?";
+$sql = "SELECT COUNT(DISTINCT m.id_aluno) as total_alunos FROM matricula m JOIN turma_disciplina td ON m.id_turma = td.id_turma WHERE td.id_professor = ?";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $id_professor);
 $stmt->execute();
-$result = $stmt->get_result();
-$alunos_row = $result->fetch_assoc();
-$total_alunos = $alunos_row['total_alunos'] ?? 0;
+$alunos_row = $stmt->get_result()->fetch_assoc();
+$total_alunos = (int)($alunos_row['total_alunos'] ?? 0);
 $stmt->close();
 
-// Turmas ativas
-$sql = "SELECT COUNT(DISTINCT t.id_turma) as turmas_ativas
-        FROM turma t
-        JOIN turma_disciplina td ON t.id_turma = td.id_turma
-        WHERE td.id_professor = ?";
+$sql = "SELECT COUNT(DISTINCT t.id_turma) as turmas_ativas FROM turma t JOIN turma_disciplina td ON t.id_turma = td.id_turma WHERE td.id_professor = ?";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $id_professor);
 $stmt->execute();
-$result = $stmt->get_result();
-$turmas_row = $result->fetch_assoc();
-$turmas_ativas = $turmas_row['turmas_ativas'] ?? 0;
+$turmas_row = $stmt->get_result()->fetch_assoc();
+$turmas_ativas = (int)($turmas_row['turmas_ativas'] ?? 0);
 $stmt->close();
 
-// Aulas hoje (contando horários com dia de hoje)
 $dias_semana = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sexta'];
 $dia_semana = $dias_semana[date('N')] ?? '';
-$sql = "SELECT COUNT(DISTINCT h.id_horario) as aulas_hoje
-        FROM horario h
-        JOIN turma_disciplina td ON h.id_turma_disciplina = td.id_turma_disciplina
-        WHERE td.id_professor = ? AND h.dia_semana = ?";
+$sql = "SELECT COUNT(DISTINCT h.id_horario) as aulas_hoje FROM horario h JOIN turma_disciplina td ON h.id_turma_disciplina = td.id_turma_disciplina WHERE td.id_professor = ? AND h.dia_semana = ?";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("is", $id_professor, $dia_semana);
 $stmt->execute();
-$result = $stmt->get_result();
-$aulas_row = $result->fetch_assoc();
-$aulas_hoje = $aulas_row['aulas_hoje'] ?? 0;
+$aulas_row = $stmt->get_result()->fetch_assoc();
+$aulas_hoje = (int)($aulas_row['aulas_hoje'] ?? 0);
 $stmt->close();
 
-// Notas pendentes (notas NULL ou vazias)
-$sql = "SELECT COUNT(*) as notas_pendentes
-        FROM nota n
-        JOIN turma_disciplina td ON n.id_turma_disciplina = td.id_turma_disciplina
-        WHERE td.id_professor = ? AND (n.nota IS NULL OR n.nota = '')";
+$sql = "SELECT COUNT(*) as notas_pendentes FROM nota n JOIN turma_disciplina td ON n.id_turma_disciplina = td.id_turma_disciplina WHERE td.id_professor = ? AND (n.nota IS NULL OR n.nota = '')";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $id_professor);
 $stmt->execute();
-$result = $stmt->get_result();
-$notas_row = $result->fetch_assoc();
-$notas_pendentes = $notas_row['notas_pendentes'] ?? 0;
+$notas_row = $stmt->get_result()->fetch_assoc();
+$notas_pendentes = (int)($notas_row['notas_pendentes'] ?? 0);
 $stmt->close();
 
-// Minhas turmas
 $sql = "SELECT t.nome as turma_nome, d.nome as disciplina_nome, t.periodo, COUNT(DISTINCT m.id_aluno) as total_alunos, AVG(n.nota) as media
         FROM turma t
         JOIN turma_disciplina td ON t.id_turma = td.id_turma
@@ -87,70 +62,30 @@ $stmt->execute();
 $result = $stmt->get_result();
 $minhas_turmas = [];
 while ($row = $result->fetch_assoc()) {
-    $row['media'] = $row['media'] ? number_format($row['media'], 1) : '-';
+    $row['media'] = $row['media'] !== null ? number_format((float)$row['media'], 1, ',', '.') : '—';
     $minhas_turmas[] = $row;
 }
 $stmt->close();
+function atlas_prof_esc($value) { return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8'); }
 ?>
-
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professor | Início</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-        main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-        .topo { background: linear-gradient(135deg, #1f3b65, #4568a8); color: white; border-radius: 18px; padding: 30px 28px; margin-bottom: 26px; }
-        .topo h1 { margin: 0 0 4px; font-size: 2rem; }
-        .topo p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
-        .painel { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 28px; }
-        .box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #dfe9f6; box-shadow: 0 8px 20px rgba(15,23,42,0.04); }
-        .box .titulo { color: #6b7280; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-        .box .valor { font-size: 2rem; font-weight: bold; color: #183f73; }
-        .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); margin-bottom: 22px; }
-        .panel h2 { margin-top: 0; color: #133b6d; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; color: #6b7280; border-bottom: 1px solid #edf2f9; text-transform: uppercase; }
-        tbody td { padding: 12px; border-bottom: 1px solid #edf2f9; color: #374151; }
-        tbody tr:last-child td { border-bottom: none; }
-    </style>
-</head>
-<body>
-    <?php include '../../includes/menu_professor.php'; ?>
-    <main>
-        <section class="topo">
-            <h1>Bem-vindo, <?php echo htmlspecialchars($nome_prof); ?>!</h1>
-        </section>
-        <section class="painel">
-            <div class="box"><div class="titulo">Total de Alunos</div><div class="valor"><?php echo $total_alunos; ?></div></div>
-            <div class="box"><div class="titulo">Turmas Ativas</div><div class="valor"><?php echo $turmas_ativas; ?></div></div>
-            <div class="box"><div class="titulo">Aulas Hoje</div><div class="valor"><?php echo $aulas_hoje; ?></div></div>
-            <div class="box"><div class="titulo">Notas Pendentes</div><div class="valor"><?php echo $notas_pendentes; ?></div></div>
-        </section>
-        <div class="panel">
-            <h2>Minhas Turmas</h2>
-            <?php if (count($minhas_turmas) > 0): ?>
-                <table>
-                    <thead><tr><th>Turma</th><th>Disciplina</th><th>Período</th><th>Alunos</th><th>Média</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($minhas_turmas as $turma): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($turma['turma_nome']); ?></td>
-                                <td><?php echo htmlspecialchars($turma['disciplina_nome']); ?></td>
-                                <td><?php echo htmlspecialchars($turma['periodo']); ?></td>
-                                <td><?php echo $turma['total_alunos']; ?></td>
-                                <td><?php echo $turma['media']; ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p style="color: #666;">Nenhuma turma atribuída.</p>
-            <?php endif; ?>
-        </div>
-    </main>
-</body>
-</html>
+<html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Professor | Visão geral · Instituto Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{background:var(--atlas-bg,#f7f8fc);color:var(--atlas-ink,#202338);font-family:Inter,Arial,sans-serif}.prof-main{max-width:1320px;margin:0 auto;padding:36px 60px 65px}.prof-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:29px}.prof-eyebrow{font-size:10px;font-weight:750;letter-spacing:.12em;color:#858ba1}.prof-eyebrow b{color:#b5b9c7;margin:0 8px}.prof-pill{border:1px solid #e6e7f0;background:white;color:#777d93;border-radius:100px;padding:9px 13px;font-size:11px;font-weight:650}.prof-heading{display:flex;justify-content:space-between;gap:22px;align-items:flex-end;margin-bottom:29px}.prof-heading h1{font-size:clamp(28px,3vw,38px);letter-spacing:-.055em;line-height:1.16;margin:0 0 10px;font-weight:750}.prof-heading p{margin:0;color:#777d93;font-size:13px;line-height:1.7}.prof-heading .prof-label{display:inline-flex;background:#eeedff;color:#6664df;border-radius:100px;padding:9px 12px;font-size:11px;font-weight:700;white-space:nowrap}.prof-card{background:#fff;border:1px solid #e7e9f1;border-radius:16px;box-shadow:0 3px 18px rgba(30,36,74,.025)}.prof-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:20px}.prof-overview{padding:28px 29px;display:flex;flex-direction:column;min-height:286px}.prof-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.prof-card h2{font-size:15px;letter-spacing:-.025em;margin:0;font-weight:700}.prof-muted{font-size:11px;color:#9197a8}.prof-big{font-size:clamp(54px,7vw,80px);letter-spacing:-.085em;line-height:1;margin:24px 0 7px;font-weight:750;font-variant-numeric:tabular-nums}.prof-big-label{color:#777d93;font-size:12px}.prof-stats{margin-top:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-top:24px}.prof-stat{border-top:1px solid #e7e9f1;padding-top:17px;min-width:0}.prof-stat span{display:block;color:#777d93;font-size:11px;margin-bottom:8px}.prof-stat strong{font-size:25px;letter-spacing:-.05em;font-weight:750;display:block;font-variant-numeric:tabular-nums}.prof-stat small{display:block;color:#a0a5b4;font-size:10px;margin-top:6px}.prof-action{padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:20px;background:linear-gradient(150deg,#fff 52%,#f1f0ff 100%)}.prof-action-icon{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:#eeedff;color:#6664df;font-size:24px}.prof-action h2{font-size:22px;line-height:1.3;letter-spacing:-.045em;max-width:280px}.prof-action p{font-size:12px;line-height:1.7;color:#777d93;margin:9px 0 0}.prof-action a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;background:#6664df;color:#fff;border-radius:10px;padding:13px 15px;font-size:12px;font-weight:700}.prof-action a:hover{background:#514ecb}.prof-section{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:35px 0 16px}.prof-section h2{font-size:17px;letter-spacing:-.035em;margin:0}.prof-section p{color:#777d93;font-size:12px;margin:6px 0 0}.prof-counter{background:#eeedff;color:#6664df;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:700}.prof-table-card{overflow:hidden}.prof-table-scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:660px;text-align:left}thead{background:#fafbfe}th{font-size:10px;letter-spacing:.075em;color:#858ba1;text-transform:uppercase;font-weight:750;padding:17px 22px;border-bottom:1px solid #e7e9f1}td{font-size:12px;color:#535a70;padding:19px 22px;border-bottom:1px solid #f0f1f6}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#fafaff}td:first-child{font-weight:750;color:#25283d}.prof-subject{display:inline-flex;background:#f3f2ff;color:#625fc3;border-radius:7px;padding:7px 10px;font-weight:650}.prof-number{font-weight:750;color:#25283d;font-variant-numeric:tabular-nums}.prof-empty{padding:35px 24px;color:#777d93;font-size:13px;text-align:center}.prof-footer{margin-top:24px;color:#a1a6b5;font-size:10px;text-align:right}@media(max-width:1100px){.prof-hero{grid-template-columns:1fr}.prof-action{min-height:200px}.prof-action a{max-width:250px}}@media(max-width:800px){.prof-main{padding:76px 18px 35px}.prof-heading{align-items:flex-start;flex-direction:column}.prof-overview,.prof-action{padding:22px}.prof-top{margin-bottom:20px}th,td{padding:15px 17px}}@media(max-width:380px){.prof-stats{gap:8px}.prof-stat strong{font-size:21px}.prof-stat span{font-size:10px}}
+</style></head><body>
+<?php include '../../includes/menu_professor.php'; ?>
+<main class="prof-main">
+ <div class="prof-top"><span class="prof-eyebrow">INSTITUTO ATLAS <b>/</b> PORTAL DO PROFESSOR</span><span class="prof-pill"><?php echo atlas_prof_esc(date('Y')); ?></span></div>
+ <header class="prof-heading"><div><h1>Visão geral<span style="color:#6664df">.</span></h1><p>Olá, <?php echo atlas_prof_esc($nome_prof); ?>. Acompanhe suas turmas e atividades em um só lugar.</p></div><span class="prof-label">Área do professor</span></header>
+ <section class="prof-hero" aria-label="Resumo do professor">
+  <article class="prof-card prof-overview"><div class="prof-card-top"><h2>Seu panorama acadêmico</h2><span class="prof-muted">Dados atuais</span></div><div class="prof-big"><?php echo $total_alunos; ?></div><div class="prof-big-label">Alunos vinculados às suas turmas</div><div class="prof-stats"><div class="prof-stat"><span>Turmas</span><strong><?php echo $turmas_ativas; ?></strong><small>Vinculadas</small></div><div class="prof-stat"><span>Aulas hoje</span><strong><?php echo $aulas_hoje; ?></strong><small>Na grade</small></div><div class="prof-stat"><span>Notas pendentes</span><strong><?php echo $notas_pendentes; ?></strong><small>Registros sem nota</small></div></div></article>
+  <aside class="prof-card prof-action"><div class="prof-action-icon" aria-hidden="true">↗</div><div><h2>Organize suas avaliações.</h2><p>Consulte os lançamentos e acompanhe os registros de notas das suas turmas.</p></div><a href="notas_professor.php">Acessar notas <span aria-hidden="true">↗</span></a></aside>
+ </section>
+ <div class="prof-section"><div><h2>Minhas turmas</h2><p>Disciplinas atribuídas e desempenho registrado.</p></div><span class="prof-counter"><?php echo count($minhas_turmas); ?> vínculo(s)</span></div>
+ <section class="prof-card prof-table-card" aria-label="Tabela de turmas">
+ <?php if ($minhas_turmas): ?><div class="prof-table-scroll"><table><thead><tr><th>Turma</th><th>Disciplina</th><th>Período</th><th>Alunos</th><th>Média</th></tr></thead><tbody>
+ <?php foreach ($minhas_turmas as $turma): ?><tr><td><?php echo atlas_prof_esc($turma['turma_nome']); ?></td><td><span class="prof-subject"><?php echo atlas_prof_esc($turma['disciplina_nome']); ?></span></td><td><?php echo atlas_prof_esc($turma['periodo']); ?></td><td class="prof-number"><?php echo (int)$turma['total_alunos']; ?></td><td class="prof-number"><?php echo atlas_prof_esc($turma['media']); ?></td></tr><?php endforeach; ?>
+ </tbody></table></div><?php else: ?><div class="prof-empty">Nenhuma turma atribuída ao seu perfil até o momento.</div><?php endif; ?>
+ </section><div class="prof-footer">Instituto Atlas · Portal acadêmico</div>
+</main></body></html>

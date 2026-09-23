@@ -2,159 +2,38 @@
 session_start();
 require '../../includes/conexao.php';
 require '../../includes/verificar_sessao.php';
-
 verificar_perfil('Aluno');
-
 $id_aluno = $_SESSION['id_usuario'];
-
-// Se clicar para visualizar/marcar como lida
-if (isset($_GET['visualizar']) && isset($_GET['id_msg'])) {
+$msg = null;
+$visualizar = isset($_GET['visualizar']) && isset($_GET['id_msg']);
+if ($visualizar) {
     $id_msg = intval($_GET['id_msg']);
-    
-    // Atualizar como lida
+    // Atualização limitada ao destinatário autenticado, como no código original.
     $sql = "UPDATE mensagem SET lida = 1 WHERE id_mensagem = ? AND destinatario = ?";
-    $stmt = $conexao->prepare($sql);
-    $stmt->bind_param("ii", $id_msg, $id_aluno);
-    $stmt->execute();
-    $stmt->close();
-    
-    // Buscar mensagem
-    $sql = "SELECT m.*, u.nome as remetente_nome 
-            FROM mensagem m
-            JOIN usuario u ON m.remetente = u.id_usuario
-            WHERE m.id_mensagem = ? AND m.destinatario = ?";
-    $stmt = $conexao->prepare($sql);
-    $stmt->bind_param("ii", $id_msg, $id_aluno);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $msg = $result->fetch_assoc();
-    $stmt->close();
-    
-    if ($msg):
-    ?>
-    <!DOCTYPE html>
-    <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Visualizar Mensagem</title>
-        <style>
-            * { box-sizing: border-box; }
-            body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-            main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-            .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); }
-            .msg-header { border-bottom: 1px solid #edf2f9; padding-bottom: 12px; margin-bottom: 16px; }
-            .msg-header p { margin: 4px 0; font-size: 0.875rem; color: #666; }
-            .msg-content { line-height: 1.6; }
-            a { color: #4568a8; text-decoration: none; }
-            a:hover { text-decoration: underline; }
-            button { background: #4568a8; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-        </style>
-    </head>
-    <body>
-        <?php include '../../includes/menu_aluno.php'; ?>
-        <main>
-            <div class="panel">
-                <div class="msg-header">
-                    <p><strong>De:</strong> <?php echo htmlspecialchars($msg['remetente_nome']); ?></p>
-                    <p><strong>Assunto:</strong> <?php echo htmlspecialchars($msg['assunto'] ?? 'Sem assunto'); ?></p>
-                    <p><strong>Data:</strong> <?php echo (new DateTime($msg['data_envio']))->format('d/m/Y H:i'); ?></p>
-                </div>
-                <div class="msg-content">
-                    <?php echo nl2br(htmlspecialchars($msg['conteudo'])); ?>
-                </div>
-                <p style="margin-top: 20px;">
-                    <a href="mensagens_aluno.php">&lt; Voltar</a>
-                </p>
-            </div>
-        </main>
-    </body>
-    </html>
-    <?php
-    endif;
-    exit();
+    $stmt = $conexao->prepare($sql);$stmt->bind_param('ii',$id_msg,$id_aluno);$stmt->execute();$stmt->close();
+    $sql = "SELECT m.*, u.nome as remetente_nome FROM mensagem m JOIN usuario u ON m.remetente = u.id_usuario WHERE m.id_mensagem = ? AND m.destinatario = ?";
+    $stmt = $conexao->prepare($sql);$stmt->bind_param('ii',$id_msg,$id_aluno);$stmt->execute();$msg=$stmt->get_result()->fetch_assoc();$stmt->close();
+} else {
+    $sql = "SELECT m.*, u.nome as remetente_nome FROM mensagem m JOIN usuario u ON m.remetente = u.id_usuario WHERE m.destinatario = ? ORDER BY m.data_envio DESC";
+    $stmt=$conexao->prepare($sql);$stmt->bind_param('i',$id_aluno);$stmt->execute();$result=$stmt->get_result();$mensagens=[];while($row=$result->fetch_assoc()){$mensagens[]=$row;}$stmt->close();
+    $nao_lidas=count(array_filter($mensagens,fn($m)=>!(int)$m['lida']));
 }
-
-// Buscar mensagens para este aluno
-$sql = "SELECT m.*, u.nome as remetente_nome
-        FROM mensagem m
-        JOIN usuario u ON m.remetente = u.id_usuario
-        WHERE m.destinatario = ?
-        ORDER BY m.data_envio DESC";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id_aluno);
-$stmt->execute();
-$result = $stmt->get_result();
-$mensagens = [];
-while ($row = $result->fetch_assoc()) {
-    $mensagens[] = $row;
-}
-$stmt->close();
+function atlas_escape($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+function atlas_date($v,$time=false){try{return (new DateTime($v))->format($time?'d/m/Y · H:i':'d/m/Y');}catch(Exception $e){return '—';}}
 ?>
-
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aluno | Mensagens</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-        main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-        .topo { background: linear-gradient(135deg, #1f3b65, #4568a8); color: white; border-radius: 18px; padding: 30px 28px; margin-bottom: 26px; }
-        .topo h1 { margin: 0 0 4px; font-size: 2rem; }
-        .topo p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
-        .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); margin-bottom: 22px; }
-        .panel h2 { margin-top: 0; color: #133b6d; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; color: #6b7280; border-bottom: 1px solid #edf2f9; text-transform: uppercase; }
-        tbody td { padding: 12px; border-bottom: 1px solid #edf2f9; color: #374151; }
-        tbody tr:last-child td { border-bottom: none; }
-        .assunto { color: #374151; text-decoration: none; }
-        .assunto:hover { text-decoration: underline; }
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: bold; }
-        .verde { background: #eaf7ef; color: #157c3d; }
-        .vermelho { background: #fee2e2; color: #991b1b; }
-    </style>
-</head>
-<body>
-    <?php include '../../includes/menu_aluno.php'; ?>
-    <main>
-        <section class="topo">
-            <h1>Mensagens</h1>
-            <p>Caixa de entrada — comunicados e mensagens recebidas</p>
-        </section>
-        <div class="panel">
-            <h2>Caixa de Entrada</h2>
-            <?php if (count($mensagens) > 0): ?>
-                <table>
-                    <thead><tr><th>Remetente</th><th>Assunto</th><th>Data</th><th>Situação</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($mensagens as $msg): ?>
-                            <tr>
-                                <td style="<?php echo $msg['lida'] ? '' : 'font-weight: bold;'; ?>">
-                                    <?php echo htmlspecialchars($msg['remetente_nome']); ?>
-                                </td>
-                                <td>
-                                    <a class="assunto" href="?visualizar=1&id_msg=<?php echo $msg['id_mensagem']; ?>">
-                                        <?php echo htmlspecialchars($msg['assunto'] ?? 'Sem assunto'); ?>
-                                    </a>
-                                </td>
-                                <td><?php echo (new DateTime($msg['data_envio']))->format('d/m/Y'); ?></td>
-                                <td>
-                                    <span class="badge <?php echo $msg['lida'] ? 'verde' : 'vermelho'; ?>">
-                                        <?php echo $msg['lida'] ? 'Lida' : 'Não lida'; ?>
-                                    </span>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p style="color: #666;">Nenhuma mensagem na caixa de entrada.</p>
-            <?php endif; ?>
-        </div>
-    </main>
-</body>
-</html>
+<html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mensagens | Instituto Atlas</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#202338;--muted:#777d93;--accent:#6664df;--line:#e7e9f1;--bg:#f7f8fc}*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input,textarea{font:inherit}a{color:inherit}.atlas-main{width:min(1320px,100%);margin:0 auto;padding:36px clamp(20px,4vw,60px) 65px}.eyebrow{font-size:10px;letter-spacing:.15em;color:#9297a8;font-weight:750}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}.year,.pill{font-size:11px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:9px 12px;color:#656b83}.heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:30px}.heading h1{font-size:clamp(28px,3vw,38px);line-height:1.2;letter-spacing:-.055em;margin:0 0 10px;font-weight:750;overflow-wrap:anywhere}.heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}.tag{border:1px solid #dfdefb;color:#5a58c4;background:#f0efff;padding:8px 12px;border-radius:100px;font-size:11px;font-weight:650;white-space:nowrap}.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 18px rgba(30,36,74,.025)}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px}.section-head h2{font-size:17px;letter-spacing:-.035em;margin:0}.section-head p{font-size:12px;color:var(--muted);margin:6px 0 0}.count{background:#eeedff;color:#5b59c4;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:650}.empty{padding:36px 24px;color:var(--muted);font-size:13px;text-align:center}.footer{text-align:right;margin-top:25px;color:#a1a6b5;font-size:10px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#6664df;color:#fff;border:1px solid #6664df;border-radius:10px;padding:12px 17px;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer}.btn:hover{background:#5351c4}.btn.secondary{background:#fff;border-color:var(--line);color:#545a71}.btn.secondary:hover{background:#f6f6ff}.btn:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #aaa9ff;outline-offset:2px}.notice{padding:15px 18px;border-radius:12px;font-size:12px;line-height:1.65;margin-bottom:20px;background:#f0efff;color:#5553a7;border:1px solid #dfdefb}.notice.error{background:#fff0f0;color:#a63842;border-color:#f6dadd}.notice.success{background:#eaf8ef;color:#28754a;border-color:#d4eddd}.notice.warn{background:#fff7ea;color:#98601b;border-color:#f3e5c8}.search{width:min(310px,100%);border:1px solid #e3e5ee;background:#fafbfe;border-radius:9px;padding:10px 12px;color:var(--ink);font-size:12px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:20px 24px;border-bottom:1px solid var(--line)}.toolbar strong{font-size:13px}.muted{color:var(--muted)}[hidden]{display:none!important}@media(max-width:800px){.atlas-main{padding:76px 18px 35px}.heading{align-items:start;flex-direction:column}.toolbar{flex-wrap:wrap}.search{width:100%}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style><style>.back-link{font-size:12px;color:#6664df;font-weight:650;text-decoration:none}.message-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:32px}.message-stat{padding:22px 25px;display:flex;flex-direction:column;gap:9px}.message-stat>span{color:var(--muted);font-size:12px;font-weight:600}.message-stat strong{font-size:42px;letter-spacing:-.07em;line-height:1.1}.message-stat small{color:#9298a9;font-size:11px}.message-stat:first-child{background:linear-gradient(135deg,#fff 65%,#f4f3ff)}.inbox{overflow:hidden}.message-row{display:flex;align-items:center;gap:17px;padding:20px 24px;text-decoration:none;border-bottom:1px solid #f0f1f6}.message-row:last-child{border-bottom:0}.message-row:hover{background:#fafaff}.sender-avatar{width:40px;height:40px;border-radius:12px;background:#efeeff;color:#6664df;display:grid;place-items:center;font-weight:750;flex:none;font-size:14px}.message-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px}.message-info strong{font-size:13px;overflow-wrap:anywhere}.message-info>span{font-size:11px;color:#6c7286}.message-info small{font-size:11px;color:#9298a9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.message-row.unread .message-info strong{color:#35339c}.message-side{display:flex;flex-direction:column;align-items:end;gap:8px;flex:none}.message-side time{font-size:10px;color:#9298a9}.status{font-size:10px;font-weight:700;border-radius:100px;padding:6px 9px}.status.read{background:#f1f2f6;color:#7b8090}.status.unread-status{background:#f0efff;color:#5755bc}.arrow{font-size:18px;color:#9a9db2}.message-detail{overflow:hidden}.detail-meta{display:flex;align-items:center;gap:14px;padding:25px 30px;border-bottom:1px solid var(--line)}.detail-meta>div:nth-child(2){display:flex;flex-direction:column;gap:5px}.detail-meta strong{font-size:13px}.detail-meta small{font-size:11px;color:var(--muted)}.detail-meta time{margin-left:auto;color:#8d93a6;font-size:11px}.message-content{padding:32px 30px;line-height:1.85;font-size:13px;white-space:normal;overflow-wrap:anywhere;min-height:120px}.detail-actions{padding:20px 30px;border-top:1px solid var(--line)}@media(max-width:600px){.message-stats{gap:10px}.message-stat{padding:18px}.message-row{gap:10px;padding:16px 13px}.message-side .status,.arrow{display:none}.message-side time{font-size:9px}.sender-avatar{width:32px;height:32px}.detail-meta,.message-content,.detail-actions{padding:20px 17px}.detail-meta time{font-size:10px}}</style></head><body>
+<?php include '../../includes/menu_aluno.php'; ?>
+<main class="atlas-main"><div class="topline"><span class="eyebrow">INSTITUTO ATLAS / ESPAÇO DO ALUNO</span><span class="year">COMUNICAÇÃO</span></div>
+<?php if($visualizar): ?>
+<header class="heading"><div><a class="back-link" href="mensagens_aluno.php">← Voltar à caixa de entrada</a><h1 style="margin-top:18px"><?php echo $msg?atlas_escape($msg['assunto']??'Sem assunto'):'Mensagem não encontrada'; ?></h1><p><?php echo $msg?'Leia o conteúdo da mensagem recebida.':'Esta mensagem não está disponível para sua conta.'; ?></p></div><span class="tag">Mensagem</span></header>
+<?php if($msg): ?><article class="card message-detail"><div class="detail-meta"><div class="sender-avatar" aria-hidden="true"><?php echo atlas_escape(mb_substr($msg['remetente_nome'],0,1,'UTF-8')); ?></div><div><strong><?php echo atlas_escape($msg['remetente_nome']); ?></strong><small>Remetente</small></div><time><?php echo atlas_escape(atlas_date($msg['data_envio'],true)); ?></time></div><div class="message-content"><?php echo nl2br(atlas_escape($msg['conteudo'])); ?></div><div class="detail-actions"><a class="btn secondary" href="mensagens_aluno.php">← Caixa de entrada</a></div></article><?php else: ?><div class="card empty">Mensagem não encontrada. <a href="mensagens_aluno.php">Voltar à caixa de entrada</a>.</div><?php endif; ?>
+<?php else: ?>
+<header class="heading"><div><h1>Mensagens</h1><p>Comunicados e mensagens recebidas em um só lugar.</p></div><span class="tag">Caixa de entrada</span></header>
+<div class="message-stats"><div class="card message-stat"><span>Total de mensagens</span><strong><?php echo count($mensagens); ?></strong><small>Recebidas na sua conta</small></div><div class="card message-stat"><span>Não lidas</span><strong><?php echo $nao_lidas; ?></strong><small>Aguardando leitura</small></div></div>
+<div class="section-head"><div><h2>Caixa de entrada</h2><p>Selecione uma mensagem para visualizar o conteúdo.</p></div><span class="count"><?php echo count($mensagens); ?> mensagens</span></div>
+<div class="card inbox"><?php if($mensagens): ?><div class="toolbar"><strong>Mensagens recebidas</strong><input class="search" id="message-search" type="search" placeholder="Buscar remetente ou assunto" aria-label="Buscar mensagens"></div><div id="message-list"><?php foreach($mensagens as $item): ?><a class="message-row <?php echo $item['lida']?'':'unread'; ?>" href="?visualizar=1&amp;id_msg=<?php echo (int)$item['id_mensagem']; ?>"><span class="sender-avatar" aria-hidden="true"><?php echo atlas_escape(mb_substr($item['remetente_nome'],0,1,'UTF-8')); ?></span><span class="message-info"><strong><?php echo atlas_escape($item['assunto']??'Sem assunto'); ?></strong><span><?php echo atlas_escape($item['remetente_nome']); ?></span><small><?php echo atlas_escape(mb_substr($item['conteudo'],0,110,'UTF-8')); ?><?php echo mb_strlen($item['conteudo'],'UTF-8')>110?'…':''; ?></small></span><span class="message-side"><time><?php echo atlas_escape(atlas_date($item['data_envio'])); ?></time><span class="status <?php echo $item['lida']?'read':'unread-status'; ?>"><?php echo $item['lida']?'Lida':'Não lida'; ?></span></span><span class="arrow" aria-hidden="true">→</span></a><?php endforeach; ?></div><div id="message-no-results" class="empty" hidden>Nenhuma mensagem encontrada para essa busca.</div><?php else: ?><div class="empty">Nenhuma mensagem na caixa de entrada.</div><?php endif; ?></div>
+<?php endif; ?><div class="footer">Instituto Atlas · Portal acadêmico</div></main><script>(function(){var search=document.getElementById('message-search'),rows=document.querySelectorAll('#message-list .message-row'),empty=document.getElementById('message-no-results');if(!search||!empty)return;search.addEventListener('input',function(){var term=search.value.trim().toLocaleLowerCase('pt-BR'),shown=0;rows.forEach(function(row){var ok=row.textContent.toLocaleLowerCase('pt-BR').includes(term);row.hidden=!ok;if(ok)shown++});empty.hidden=shown!==0})})();</script></body></html>

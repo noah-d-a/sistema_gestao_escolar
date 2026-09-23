@@ -2,154 +2,16 @@
 session_start();
 require '../../includes/conexao.php';
 require '../../includes/verificar_sessao.php';
-
 verificar_perfil('Aluno');
-
 $id_aluno = $_SESSION['id_usuario'];
-
-// Dados da turma
 $sql = "SELECT t.ano_letivo FROM matricula m JOIN turma t ON m.id_turma = t.id_turma WHERE m.id_aluno = ?";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id_aluno);
-$stmt->execute();
-$result = $stmt->get_result();
-$turma_row = $result->fetch_assoc();
-$ano_letivo = $turma_row['ano_letivo'] ?? date('Y');
-$stmt->close();
-
-// Calcular frequência geral
-$sql = "SELECT COUNT(*) as total, SUM(CASE WHEN presente = 1 THEN 1 ELSE 0 END) as presentes
-        FROM frequencia f
-        JOIN matricula m ON f.id_matricula = m.id_matricula
-        WHERE m.id_aluno = ?";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id_aluno);
-$stmt->execute();
-$result = $stmt->get_result();
-$freq_row = $result->fetch_assoc();
-$total_geral = $freq_row['total'] ?? 0;
-$presentes_geral = $freq_row['presentes'] ?? 0;
-$faltas_gerais = $total_geral - $presentes_geral;
-$freq_geral = $total_geral > 0 ? round(($presentes_geral / $total_geral) * 100) : 0;
-$stmt->close();
-
-// Por disciplina
-$sql = "SELECT d.nome, COUNT(*) as total, SUM(CASE WHEN f.presente = 1 THEN 1 ELSE 0 END) as presentes
-        FROM frequencia f
-        JOIN turma_disciplina td ON f.id_turma_disciplina = td.id_turma_disciplina
-        JOIN disciplina d ON td.id_disciplina = d.id_disciplina
-        JOIN matricula m ON f.id_matricula = m.id_matricula
-        WHERE m.id_aluno = ?
-        GROUP BY d.nome
-        ORDER BY d.nome";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id_aluno);
-$stmt->execute();
-$result = $stmt->get_result();
-$disciplinas = [];
-$em_risco = 0;
-while ($row = $result->fetch_assoc()) {
-    $faltas = $row['total'] - $row['presentes'];
-    $freq = $row['total'] > 0 ? round(($row['presentes'] / $row['total']) * 100) : 0;
-    
-    if ($freq < 75) {
-        $situacao = 'Risco';
-        $em_risco++;
-        $classe = 'vermelho';
-    } elseif ($freq < 90) {
-        $situacao = 'Atenção';
-        $classe = 'amarelo';
-    } else {
-        $situacao = 'Regular';
-        $classe = 'verde';
-    }
-    
-    $disciplinas[] = [
-        'nome' => $row['nome'],
-        'total' => $row['total'],
-        'presentes' => $row['presentes'],
-        'faltas' => $faltas,
-        'frequencia' => $freq,
-        'situacao' => $situacao,
-        'classe' => $classe
-    ];
-}
-$stmt->close();
-?>
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aluno | Presença</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-        main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-        .topo { background: linear-gradient(135deg, #1f3b65, #4568a8); color: white; border-radius: 18px; padding: 30px 28px; margin-bottom: 26px; }
-        .topo h1 { margin: 0 0 4px; font-size: 2rem; }
-        .topo p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
-        .painel { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 28px; }
-        .box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #dfe9f6; box-shadow: 0 8px 20px rgba(15,23,42,0.04); }
-        .box .titulo { color: #6b7280; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-        .box .valor { font-size: 2rem; font-weight: bold; color: #183f73; }
-        .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); margin-bottom: 22px; }
-        .panel h2 { margin-top: 0; color: #133b6d; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; color: #6b7280; border-bottom: 1px solid #edf2f9; text-transform: uppercase; }
-        tbody td { padding: 12px; border-bottom: 1px solid #edf2f9; color: #374151; }
-        tbody tr:last-child td { border-bottom: none; }
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: bold; }
-        .verde { background: #eaf7ef; color: #157c3d; }
-        .amarelo { background: #fff7e8; color: #996000; }
-        .vermelho { background: #fee2e2; color: #991b1b; }
-        .aviso { background: #fff7e8; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 18px; font-size: 0.875rem; color: #92400e; margin-bottom: 22px; }
-        .rodape { font-size: 0.75rem; color: #9ca3af; margin-top: 14px; border-top: 1px solid #edf2f9; padding-top: 10px; }
-    </style>
-</head>
-<body>
-    <?php include '../../includes/menu_aluno.php'; ?>
-    <main>
-        <section class="topo">
-            <h1>Presença</h1>
-            <p>Acompanhe sua frequência por disciplina — ano letivo <?php echo htmlspecialchars($ano_letivo); ?></p>
-        </section>
-
-        <section class="painel">
-            <div class="box"><div class="titulo">Frequência Geral</div><div class="valor"><?php echo $freq_geral; ?>%</div></div>
-            <div class="box"><div class="titulo">Total de Faltas</div><div class="valor"><?php echo $faltas_gerais; ?></div></div>
-            <div class="box"><div class="titulo">Em Risco</div><div class="valor"><?php echo $em_risco; ?></div></div>
-            <div class="box"><div class="titulo">Totais Aulas</div><div class="valor"><?php echo $total_geral; ?></div></div>
-        </section>
-
-        <?php if ($em_risco > 0 && count($disciplinas) > 0): ?>
-            <div class="aviso">⚠ Sua frequência em <strong><?php echo htmlspecialchars($disciplinas[0]['nome']); ?></strong> está em <strong><?php echo $disciplinas[0]['frequencia']; ?>%</strong>, abaixo do mínimo exigido de 75%.</div>
-        <?php endif; ?>
-
-        <div class="panel">
-            <h2>Frequência por Disciplina</h2>
-            <?php if (count($disciplinas) > 0): ?>
-                <table>
-                    <thead><tr><th>Disciplina</th><th>Presenças</th><th>Faltas</th><th>Total</th><th>Frequência</th><th>Situação</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($disciplinas as $disc): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($disc['nome']); ?></td>
-                                <td><?php echo $disc['presentes']; ?></td>
-                                <td><?php echo $disc['faltas']; ?></td>
-                                <td><?php echo $disc['total']; ?></td>
-                                <td><?php echo $disc['frequencia']; ?>%</td>
-                                <td><span class="badge <?php echo $disc['classe']; ?>"><?php echo htmlspecialchars($disc['situacao']); ?></span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <p class="rodape">* Frequência mínima exigida: 75% | Abaixo disso o aluno fica em risco de reprovação por falta.</p>
-            <?php else: ?>
-                <p style="color: #666;">Nenhum registro de frequência ainda.</p>
-            <?php endif; ?>
-        </div>
-    </main>
-</body>
-</html>
+$stmt=$conexao->prepare($sql);$stmt->bind_param('i',$id_aluno);$stmt->execute();$turma_row=$stmt->get_result()->fetch_assoc();$ano_letivo=$turma_row['ano_letivo']??date('Y');$stmt->close();
+$sql="SELECT COUNT(*) as total, SUM(CASE WHEN presente = 1 THEN 1 ELSE 0 END) as presentes FROM frequencia f JOIN matricula m ON f.id_matricula = m.id_matricula WHERE m.id_aluno = ?";
+$stmt=$conexao->prepare($sql);$stmt->bind_param('i',$id_aluno);$stmt->execute();$freq_row=$stmt->get_result()->fetch_assoc();$total_geral=(int)($freq_row['total']??0);$presentes_geral=(int)($freq_row['presentes']??0);$faltas_gerais=$total_geral-$presentes_geral;$freq_geral=$total_geral>0?round(($presentes_geral/$total_geral)*100):0;$stmt->close();
+$sql="SELECT d.nome, COUNT(*) as total, SUM(CASE WHEN f.presente = 1 THEN 1 ELSE 0 END) as presentes FROM frequencia f JOIN turma_disciplina td ON f.id_turma_disciplina = td.id_turma_disciplina JOIN disciplina d ON td.id_disciplina = d.id_disciplina JOIN matricula m ON f.id_matricula = m.id_matricula WHERE m.id_aluno = ? GROUP BY d.nome ORDER BY d.nome";
+$stmt=$conexao->prepare($sql);$stmt->bind_param('i',$id_aluno);$stmt->execute();$result=$stmt->get_result();$disciplinas=[];$em_risco=0;$primeira_em_risco=null;
+while($row=$result->fetch_assoc()){$faltas=$row['total']-$row['presentes'];$freq=$row['total']>0?round(($row['presentes']/$row['total'])*100):0;if($freq<75){$situacao='Risco';$em_risco++;$classe='vermelho';}elseif($freq<90){$situacao='Atenção';$classe='amarelo';}else{$situacao='Regular';$classe='verde';}$disc=['nome'=>$row['nome'],'total'=>$row['total'],'presentes'=>$row['presentes'],'faltas'=>$faltas,'frequencia'=>$freq,'situacao'=>$situacao,'classe'=>$classe];$disciplinas[]=$disc;if($classe==='vermelho'&&$primeira_em_risco===null)$primeira_em_risco=$disc;}$stmt->close();
+function atlas_escape($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+?><!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Presença | Instituto Atlas</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
+:root{--ink:#202338;--muted:#777d93;--line:#e7e9f1;--accent:#6664df;--bg:#f7f8fc}*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input{font:inherit}.atlas-main{width:min(1320px,100%);margin:0 auto;padding:36px clamp(20px,4vw,60px) 65px}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}.eyebrow{font-size:10px;letter-spacing:.15em;color:#9297a8;font-weight:750}.year{font-size:12px;border:1px solid var(--line);border-radius:8px;background:white;padding:9px 12px;color:#656b83}.heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:30px}.heading h1{font-size:clamp(28px,3vw,38px);letter-spacing:-.055em;margin:0 0 10px;font-weight:750}.heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}.tag{border:1px solid #dfdefb;color:#5a58c4;background:#f0efff;padding:8px 12px;border-radius:100px;font-size:11px;font-weight:650;white-space:nowrap}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 18px rgba(30,36,74,.025)}.stat{padding:24px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.stat:first-child{background:linear-gradient(145deg,#fff 52%,#f4f3ff)}.stat-label{font-size:12px;font-weight:600;color:var(--muted)}.stat-value{font-size:clamp(30px,3vw,45px);font-weight:750;letter-spacing:-.075em;font-variant-numeric:tabular-nums}.stat small{color:#979cac;font-size:11px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:0 0 16px}.section-heading h2{font-size:17px;letter-spacing:-.035em;margin:0 0 6px}.section-heading p{font-size:12px;color:var(--muted);margin:0;line-height:1.6}.count{background:#eeedff;color:#5b59c4;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:650;white-space:nowrap}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left;font-size:12px;min-width:720px}th{padding:16px 22px;background:#fbfcff;border-bottom:1px solid var(--line);color:#969bad;font-size:10px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}td{padding:18px 22px;border-bottom:1px solid #f0f1f6;color:#62687d;vertical-align:middle;line-height:1.5}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#fafaff}.strong{font-weight:700;color:#24273d}.number{font-weight:750;color:#252941;font-variant-numeric:tabular-nums}.badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap}.badge:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}.badge.verde{background:#eaf8ef;color:#28754a}.badge.amarelo{background:#fff5e6;color:#a56519}.badge.vermelho{background:#fff0f0;color:#b4454b}.notice{display:flex;gap:12px;align-items:flex-start;padding:17px 20px;margin-bottom:26px;background:#fff8ec;border:1px solid #f4e5c7;border-radius:12px;color:#936019;font-size:12px;line-height:1.65}.notice strong{color:#77450b}.footnote{padding:18px 24px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:#7e8497}.empty{padding:42px 24px;text-align:center;color:var(--muted);font-size:13px}.page-footer{text-align:right;margin-top:25px;color:#a1a6b5;font-size:10px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:19px 24px;border-bottom:1px solid var(--line)}.toolbar strong{font-size:13px}.search{width:min(270px,100%);border:1px solid #e3e5ee;border-radius:9px;padding:10px 12px;background:#fafbfe;color:var(--ink);font-size:12px;outline:0}.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px #6664df17}.no-match{padding:24px;text-align:center;color:var(--muted);font-size:12px}[hidden]{display:none!important}@media(max-width:1050px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:800px){.atlas-main{padding:76px 18px 35px}.heading{align-items:start;flex-direction:column}th,td{padding:15px}}@media(max-width:440px){.summary{gap:10px}.stat{min-height:125px;padding:17px}.stat-value{font-size:32px}.toolbar{flex-wrap:wrap}.search{width:100%}}
+</style></head><body><?php include '../../includes/menu_aluno.php'; ?><main class="atlas-main"><div class="topline"><span class="eyebrow">INSTITUTO ATLAS / ESPAÇO DO ALUNO</span><span class="year">Ano letivo <?php echo atlas_escape($ano_letivo); ?></span></div><header class="heading"><div><h1>Presença</h1><p>Acompanhe sua frequência e os registros de presença por disciplina.</p></div><span class="tag">Controle de frequência</span></header><section class="summary" aria-label="Resumo de frequência"><article class="card stat"><div class="stat-label">Frequência geral</div><div><div class="stat-value"><?php echo $total_geral > 0 ? atlas_escape($freq_geral).'%' : '—'; ?></div><small><?php echo $total_geral > 0 ? 'Presença nas aulas registradas' : 'Sem aulas registradas'; ?></small></div></article><article class="card stat"><div class="stat-label">Total de faltas</div><div><div class="stat-value"><?php echo atlas_escape($faltas_gerais); ?></div><small>Ausências registradas</small></div></article><article class="card stat"><div class="stat-label">Disciplinas em risco</div><div><div class="stat-value"><?php echo atlas_escape($em_risco); ?></div><small>Frequência abaixo de 75%</small></div></article><article class="card stat"><div class="stat-label">Aulas registradas</div><div><div class="stat-value"><?php echo atlas_escape($total_geral); ?></div><small>Total de registros</small></div></article></section><?php if ($primeira_em_risco !== null): ?><div class="notice" role="status"><span aria-hidden="true">⚠</span><span><?php if ($em_risco > 1): ?>Há <?php echo atlas_escape($em_risco); ?> disciplinas com frequência abaixo do mínimo de 75%. <?php endif; ?>Sua frequência em <strong><?php echo atlas_escape($primeira_em_risco['nome']); ?></strong> está em <strong><?php echo atlas_escape($primeira_em_risco['frequencia']); ?>%</strong>, abaixo do mínimo exigido de 75%.</span></div><?php endif; ?><section aria-labelledby="presenca-titulo"><div class="section-heading"><div><h2 id="presenca-titulo">Frequência por disciplina</h2><p>Consulte presenças, faltas e situação de cada matéria.</p></div><span class="count"><?php echo count($disciplinas); ?> disciplinas</span></div><div class="card"><?php if(count($disciplinas)>0): ?><div class="toolbar"><strong>Registros de frequência</strong><input class="search" id="presenca-busca" type="search" placeholder="Buscar disciplina" aria-label="Buscar disciplina"></div><div class="scroll"><table><thead><tr><th>Disciplina</th><th>Presenças</th><th>Faltas</th><th>Total</th><th>Frequência</th><th>Situação</th></tr></thead><tbody id="presenca-linhas"><?php foreach($disciplinas as $disc): ?><tr><td class="strong"><?php echo atlas_escape($disc['nome']); ?></td><td><?php echo atlas_escape($disc['presentes']); ?></td><td><?php echo atlas_escape($disc['faltas']); ?></td><td><?php echo atlas_escape($disc['total']); ?></td><td class="number"><?php echo atlas_escape($disc['frequencia']); ?>%</td><td><span class="badge <?php echo $disc['classe']; ?>"><?php echo atlas_escape($disc['situacao']); ?></span></td></tr><?php endforeach; ?></tbody></table></div><div id="presenca-vazio" class="no-match" hidden>Nenhuma disciplina corresponde à busca.</div><div class="footnote">Frequência mínima exigida: 75%. Abaixo desse percentual, o aluno fica em risco de reprovação por falta.</div><?php else: ?><div class="empty">Nenhum registro de frequência ainda.</div><?php endif; ?></div></section><div class="page-footer">Instituto Atlas · Portal acadêmico</div></main><script>(function(){const input=document.getElementById('presenca-busca'),empty=document.getElementById('presenca-vazio');if(!input||!empty)return;const rows=document.querySelectorAll('#presenca-linhas tr');input.addEventListener('input',function(){const term=this.value.trim().toLocaleLowerCase('pt-BR');let visible=0;rows.forEach(row=>{const match=row.cells[0].textContent.toLocaleLowerCase('pt-BR').includes(term);row.hidden=!match;if(match)visible++});empty.hidden=visible!==0})})();</script></body></html>

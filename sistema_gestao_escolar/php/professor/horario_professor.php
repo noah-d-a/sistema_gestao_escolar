@@ -2,102 +2,13 @@
 session_start();
 require '../../includes/conexao.php';
 require '../../includes/verificar_sessao.php';
-
 verificar_perfil('Professor');
-
-$id_professor = $_SESSION['id_usuario'];
-
-// Buscar horários
-$sql = "SELECT h.dia_semana, h.hora_inicio, h.hora_fim, t.nome as turma_nome, d.nome as disciplina_nome
-        FROM horario h
-        JOIN turma_disciplina td ON h.id_turma_disciplina = td.id_turma_disciplina
-        JOIN turma t ON td.id_turma = t.id_turma
-        JOIN disciplina d ON td.id_disciplina = d.id_disciplina
-        WHERE td.id_professor = ?
-        ORDER BY FIELD(h.dia_semana, 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'), h.hora_inicio";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id_professor);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$horarios_unicos = [];
-$dias_ordem = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-
-while ($row = $result->fetch_assoc()) {
-    $hora_key = $row['hora_inicio'];
-    if (!isset($horarios_unicos[$hora_key])) {
-        $horarios_unicos[$hora_key] = [];
-    }
-    $horarios_unicos[$hora_key][$row['dia_semana']] = $row['turma_nome'] . ' · ' . $row['disciplina_nome'];
-}
-$stmt->close();
-
-$horarios = [];
-foreach ($horarios_unicos as $hora => $dias) {
-    $linha = ['hora' => $hora];
-    foreach ($dias_ordem as $dia) {
-        $linha[$dia] = $dias[$dia] ?? '—';
-    }
-    $horarios[] = $linha;
-}
-
-usort($horarios, function($a, $b) {
-    return strcmp($a['hora'], $b['hora']);
-});
-?>
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professor | Horário</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-        main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-        .topo { background: linear-gradient(135deg, #1f3b65, #4568a8); color: white; border-radius: 18px; padding: 30px 28px; margin-bottom: 26px; }
-        .topo h1 { margin: 0 0 4px; font-size: 2rem; }
-        .topo p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
-        .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); }
-        .panel h2 { margin-top: 0; color: #133b6d; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; color: #6b7280; border-bottom: 1px solid #edf2f9; text-transform: uppercase; }
-        tbody td { padding: 12px; border-bottom: 1px solid #edf2f9; color: #374151; }
-        tbody tr:last-child td { border-bottom: none; }
-        .rodape { font-size: 0.75rem; color: #9ca3af; margin-top: 14px; border-top: 1px solid #edf2f9; padding-top: 10px; }
-    </style>
-</head>
-<body>
-    <?php include '../../includes/menu_professor.php'; ?>
-    <main>
-        <section class="topo">
-            <h1>Meus Horários</h1>
-            <p>Grade de aulas semanal — ano letivo 2026</p>
-        </section>
-        <div class="panel">
-            <h2>Grade Semanal</h2>
-            <?php if (count($horarios) > 0): ?>
-                <table>
-                    <thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($horarios as $linha): ?>
-                            <tr>
-                                <td><strong><?php echo htmlspecialchars($linha['hora']); ?></strong></td>
-                                <td><?php echo htmlspecialchars($linha['Segunda']); ?></td>
-                                <td><?php echo htmlspecialchars($linha['Terça']); ?></td>
-                                <td><?php echo htmlspecialchars($linha['Quarta']); ?></td>
-                                <td><?php echo htmlspecialchars($linha['Quinta']); ?></td>
-                                <td><?php echo htmlspecialchars($linha['Sexta']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <p class="rodape">* Horários sujeitos a alterações. Consulte a coordenação em caso de dúvidas.</p>
-            <?php else: ?>
-                <p style="color: #666;">Nenhum horário atribuído.</p>
-            <?php endif; ?>
-        </div>
-    </main>
-</body>
-</html>
+$id_professor=$_SESSION['id_usuario'];
+$sql="SELECT h.dia_semana, h.hora_inicio, h.hora_fim, t.nome as turma_nome, d.nome as disciplina_nome FROM horario h JOIN turma_disciplina td ON h.id_turma_disciplina = td.id_turma_disciplina JOIN turma t ON td.id_turma = t.id_turma JOIN disciplina d ON td.id_disciplina = d.id_disciplina WHERE td.id_professor = ? ORDER BY FIELD(h.dia_semana, 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'), h.hora_inicio";
+$stmt=$conexao->prepare($sql);$stmt->bind_param('i',$id_professor);$stmt->execute();$result=$stmt->get_result();
+$horarios_unicos=[];$dias_ordem=['Segunda','Terça','Quarta','Quinta','Sexta'];
+while($row=$result->fetch_assoc()){$hora_key=$row['hora_inicio'];if(!isset($horarios_unicos[$hora_key])){$horarios_unicos[$hora_key]=[];}$horarios_unicos[$hora_key][$row['dia_semana']]=$row['turma_nome'].' · '.$row['disciplina_nome'];}
+$stmt->close();$horarios=[];
+foreach($horarios_unicos as $hora=>$dias){$linha=['hora'=>$hora];foreach($dias_ordem as $dia){$linha[$dia]=$dias[$dia]??'—';}$horarios[]=$linha;}
+usort($horarios,function($a,$b){return strcmp($a['hora'],$b['hora']);});
+?><!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Professor | Meus horários — Instituto Atlas</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');*{box-sizing:border-box}body{margin:0;background:#f7f8fc;color:#202338;font-family:Inter,Arial,sans-serif}.atlas-main{max-width:1320px;margin:0 auto;padding:36px 60px 76px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.15em;color:#777d93;text-transform:uppercase}.head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:30px}.head h1{font-size:38px;letter-spacing:-.055em;margin:13px 0 8px;font-weight:800}.head h1 span{color:#6664df}.sub{color:#777d93;font-size:14px;line-height:1.6;margin:0}.tag{border:1px solid #e7e9f1;background:#fff;border-radius:30px;padding:10px 15px;font-size:12px;color:#6664df;font-weight:700}.box{background:#fff;border:1px solid #e7e9f1;border-radius:17px;padding:28px 30px;margin-bottom:20px;box-shadow:0 7px 22px rgba(29,32,63,.025)}.box h2{font-size:17px;letter-spacing:-.03em;margin:0 0 20px}.muted{color:#777d93;font-size:13px}.filters{display:flex;gap:16px;align-items:end;flex-wrap:wrap}.field{flex:1;min-width:180px}.field label,.form-label{display:block;color:#777d93;font-size:12px;font-weight:700;margin-bottom:9px}select,input,textarea{font:inherit;font-size:13px;border:1px solid #e1e4ef;background:#fafbfe;color:#292d45;border-radius:10px;padding:12px 13px;width:100%;outline:none}select:focus,input:focus,textarea:focus{border-color:#6664df;box-shadow:0 0 0 3px #6664df18}.readonly{display:flex;align-items:center;min-height:43px;padding:10px 13px;background:#fafbfe;border:1px solid #e7e9f1;border-radius:10px;font-size:13px;font-weight:700}.btn{border:0;border-radius:10px;background:#6664df;color:white;padding:13px 20px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}.btn:hover{background:#5552c9}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#858aa0;background:#fafbfe;padding:15px 13px;white-space:nowrap}td{padding:15px 13px;border-bottom:1px solid #eef0f6;color:#353950}tbody tr:last-child td{border-bottom:0}.badge{display:inline-block;padding:7px 11px;border-radius:100px;font-size:11px;font-weight:800}.verde{background:#e8f8ef;color:#207a4a}.amarelo{background:#fff4df;color:#946000}.vermelho{background:#ffe9ec;color:#b3334c}.empty{padding:24px;border:1px dashed #dfe2ef;border-radius:12px;color:#777d93;font-size:13px;text-align:center}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}.section-head h2{margin:0}.hint{font-size:12px;color:#858aa0}@media(max-width:1100px){.atlas-main{padding:32px 30px 65px}}@media(max-width:700px){.atlas-main{padding:28px 18px 50px}.head h1{font-size:31px}.tag{display:none}.box{padding:22px 18px}.filters{display:block}.field{margin-bottom:14px}.btn{width:100%}}.grade{min-width:850px}.grade td{vertical-align:top;width:17%}.grade .hour{width:12%;font-weight:800;color:#6664df;white-space:nowrap}.class-slot{background:#f0efff;border-left:3px solid #6664df;border-radius:7px;padding:11px 10px;font-size:12px;font-weight:700;color:#4845a6;line-height:1.5}.free{color:#bdc0cd}</style></head><body><?php include '../../includes/menu_professor.php'; ?><main class="atlas-main"><header class="head"><div><div class="eyebrow">Instituto Atlas &nbsp;/&nbsp; Portal do professor</div><h1>Meus horários<span>.</span></h1><p class="sub">Visualize sua grade de aulas semanal.</p></div><span class="tag">Área do professor</span></header><section class="box"><div class="section-head"><h2>Grade semanal</h2><span class="hint">Segunda a sexta-feira</span></div><?php if(count($horarios)>0):?><div class="table-wrap"><table class="grade"><thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead><tbody><?php foreach($horarios as $linha):?><tr><td class="hour"><?php echo htmlspecialchars(substr($linha['hora'],0,5));?></td><?php foreach($dias_ordem as $dia):?><td><?php if($linha[$dia]==='—'):?><span class="free">—</span><?php else:?><div class="class-slot"><?php echo htmlspecialchars($linha[$dia]);?></div><?php endif;?></td><?php endforeach;?></tr><?php endforeach;?></tbody></table></div><p class="hint" style="margin-top:22px">Horários sujeitos a alterações. Consulte a coordenação em caso de dúvidas.</p><?php else:?><div class="empty">Nenhum horário atribuído.</div><?php endif;?></section></main></body></html>

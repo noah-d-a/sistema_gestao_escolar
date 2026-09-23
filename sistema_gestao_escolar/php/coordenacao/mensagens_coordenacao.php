@@ -37,19 +37,12 @@ if (isset($_GET['visualizar']) && isset($_GET['id_msg'])) {
     <html lang="pt-br">
     <head>
         <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Visualizar Mensagem</title>
-        <style>
-            * { box-sizing: border-box; }
-            body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #1f2937; }
-            main { max-width: 1180px; margin: 32px auto; padding: 0 20px 40px; }
-            .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); }
-            .msg-header { border-bottom: 1px solid #edf2f9; padding-bottom: 12px; margin-bottom: 16px; }
-            .msg-header p { margin: 4px 0; font-size: 0.875rem; color: #666; }
-            .msg-content { line-height: 1.6; }
-            a { color: #4568a8; text-decoration: none; }
-            a:hover { text-decoration: underline; }
-        </style>
+        <style>*{box-sizing:border-box}body{margin:0;background:#f7f8fd;color:#20283e;font-family:Inter,Arial,sans-serif}main{max-width:1230px;margin:0 auto;padding:34px 32px 65px}.topo,.header{background:#fff;color:#20283e;border:1px solid #e2e5f1;border-radius:18px;padding:28px 30px;margin-bottom:22px}.topo:before,.header:before{content:"COORDENAÇÃO · PORTAL ACADÊMICO";display:block;color:#6353c7;letter-spacing:1.4px;font-size:11px;font-weight:800;margin-bottom:10px}.topo h1,.header h1{font-size:28px;letter-spacing:-.8px;margin:0}.box,.panel{background:#fff;border:1px solid #e2e5f1;border-radius:18px;padding:26px;margin-bottom:20px;box-shadow:0 5px 20px rgba(20,25,65,.025)}.panel h2{font-size:19px;margin:0 0 18px;color:#20283e}.formulario{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.campo{display:flex;flex-direction:column;gap:7px;min-width:0}.campo.full{grid-column:1/-1}label,.msg-label{display:block;font-weight:650;color:#404960;font-size:13px;margin:0 0 7px}input,select,textarea,.msg-input,.msg-select,.msg-textarea{width:100%;min-width:0;background:#fff;border:1px solid #dce0ed;border-radius:10px;padding:12px 13px;font:inherit;font-size:14px;color:#25304a;outline:none}input:focus,select:focus,textarea:focus{border-color:#6554ce;box-shadow:0 0 0 3px #6554ce18}input:disabled,select:disabled{background:#f7f8fc;color:#505b73;opacity:1}.msg-label{margin-top:17px}.msg-textarea{min-height:120px;resize:vertical}.btn-enviar,.principal{background:#6150c9;color:white;border:0;border-radius:10px;padding:12px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:18px}.btn-enviar:hover,.principal:hover{background:#5140b6}.secundario{background:#f0edff;color:#5746bf;border:0;border-radius:10px;padding:12px 18px}.panel table{width:100%;border-collapse:collapse;font-size:14px}.panel th{text-align:left;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#66718a;background:#f8f9fd;padding:14px 12px}.panel td{border-bottom:1px solid #eceef5;padding:15px 12px}.panel tr:last-child td{border-bottom:0}.assunto,a{color:#5947c4}.assunto{font-weight:650;text-decoration:none}.assunto:hover,a:hover{text-decoration:underline}.badge{display:inline-flex;padding:5px 10px;border-radius:8px;font-size:12px;font-weight:700}.verde{background:#eaf7f0;color:#24764c}.vermelho{background:#fff0e7;color:#ad5b21}.msg-header{border-bottom:1px solid #e9ebf3;padding-bottom:16px;margin-bottom:20px}.msg-header p{color:#566078;margin:8px 0;font-size:14px}.msg-content{line-height:1.8;white-space:normal;overflow-wrap:anywhere}.panel form{max-width:760px}.panel:has(table){overflow-x:auto}@media(max-width:760px){main{padding:22px 15px 40px}.topo,.header,.box,.panel{padding:21px}.topo h1,.header h1{font-size:24px}.formulario{grid-template-columns:1fr}.panel table{min-width:580px}}</style>
     </head>
     <body>
         <?php include '../../includes/menu_coordenacao.php'; ?>
@@ -127,79 +120,12 @@ $stmt->close();
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coordenação | Mensagens</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f7fb;
-            color: #1d2b3a;
-        }
-        nav { background: #1b2d4d; }
-        main {
-            max-width: 1100px;
-            margin: 32px auto;
-            padding: 0 20px 40px;
-        }
-        .header {
-            background: linear-gradient(135deg, #1f3b65, #4568a8);
-            color: white;
-            border-radius: 18px;
-            padding: 26px 28px;
-            margin-bottom: 24px;
-        }
-        .header h1 { margin: 0; font-size: 2rem; }
-        .lista {
-            display: grid;
-            gap: 18px;
-        }
-        .mensagem {
-            background: white;
-            border: 1px solid #e3ebf7;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-            padding: 18px 20px;
-        }
-        .topo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .remetente {
-            font-weight: bold;
-            color: #153b68;
-        }
-        .status {
-            background: #eaf7ef;
-            color: #127b3a;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: bold;
-        }
-        .conteudo {
-            color: #53627d;
-            line-height: 1.6;
-        }
-        .panel { background: #fff; border-radius: 18px; padding: 22px; border: 1px solid #e5ebf6; box-shadow: 0 10px 22px rgba(15,23,42,0.04); margin-bottom: 22px; }
-        .panel h2 { margin-top: 0; color: #133b6d; }
-        .msg-label { font-size: 0.78rem; font-weight: bold; color: #555; display: block; margin-bottom: 4px; margin-top: 12px; }
-        .msg-input, .msg-select, .msg-textarea { width: 100%; border: 1px solid #dfe9f6; border-radius: 8px; padding: 9px 12px; font-size: 0.84rem; font-family: Arial, sans-serif; outline: none; }
-        .msg-textarea { height: 90px; resize: vertical; }
-        .btn-enviar { background: #183f73; color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 0.875rem; font-weight: bold; cursor: pointer; margin-top: 14px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; color: #6b7280; border-bottom: 1px solid #edf2f9; text-transform: uppercase; }
-        tbody td { padding: 12px; border-bottom: 1px solid #edf2f9; color: #374151; }
-        tbody tr:last-child td { border-bottom: none; }
-        .assunto { color: #374151; text-decoration: none; }
-        .assunto:hover { text-decoration: underline; }
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: bold; }
-        .verde { background: #eaf7ef; color: #157c3d; }
-        .vermelho { background: #fee2e2; color: #991b1b; }
-    </style>
+    <style>*{box-sizing:border-box}body{margin:0;background:#f7f8fd;color:#20283e;font-family:Inter,Arial,sans-serif}main{max-width:1230px;margin:0 auto;padding:34px 32px 65px}.topo,.header{background:#fff;color:#20283e;border:1px solid #e2e5f1;border-radius:18px;padding:28px 30px;margin-bottom:22px}.topo:before,.header:before{content:"COORDENAÇÃO · PORTAL ACADÊMICO";display:block;color:#6353c7;letter-spacing:1.4px;font-size:11px;font-weight:800;margin-bottom:10px}.topo h1,.header h1{font-size:28px;letter-spacing:-.8px;margin:0}.box,.panel{background:#fff;border:1px solid #e2e5f1;border-radius:18px;padding:26px;margin-bottom:20px;box-shadow:0 5px 20px rgba(20,25,65,.025)}.panel h2{font-size:19px;margin:0 0 18px;color:#20283e}.formulario{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.campo{display:flex;flex-direction:column;gap:7px;min-width:0}.campo.full{grid-column:1/-1}label,.msg-label{display:block;font-weight:650;color:#404960;font-size:13px;margin:0 0 7px}input,select,textarea,.msg-input,.msg-select,.msg-textarea{width:100%;min-width:0;background:#fff;border:1px solid #dce0ed;border-radius:10px;padding:12px 13px;font:inherit;font-size:14px;color:#25304a;outline:none}input:focus,select:focus,textarea:focus{border-color:#6554ce;box-shadow:0 0 0 3px #6554ce18}input:disabled,select:disabled{background:#f7f8fc;color:#505b73;opacity:1}.msg-label{margin-top:17px}.msg-textarea{min-height:120px;resize:vertical}.btn-enviar,.principal{background:#6150c9;color:white;border:0;border-radius:10px;padding:12px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:18px}.btn-enviar:hover,.principal:hover{background:#5140b6}.secundario{background:#f0edff;color:#5746bf;border:0;border-radius:10px;padding:12px 18px}.panel table{width:100%;border-collapse:collapse;font-size:14px}.panel th{text-align:left;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#66718a;background:#f8f9fd;padding:14px 12px}.panel td{border-bottom:1px solid #eceef5;padding:15px 12px}.panel tr:last-child td{border-bottom:0}.assunto,a{color:#5947c4}.assunto{font-weight:650;text-decoration:none}.assunto:hover,a:hover{text-decoration:underline}.badge{display:inline-flex;padding:5px 10px;border-radius:8px;font-size:12px;font-weight:700}.verde{background:#eaf7f0;color:#24764c}.vermelho{background:#fff0e7;color:#ad5b21}.msg-header{border-bottom:1px solid #e9ebf3;padding-bottom:16px;margin-bottom:20px}.msg-header p{color:#566078;margin:8px 0;font-size:14px}.msg-content{line-height:1.8;white-space:normal;overflow-wrap:anywhere}.panel form{max-width:760px}.panel:has(table){overflow-x:auto}@media(max-width:760px){main{padding:22px 15px 40px}.topo,.header,.box,.panel{padding:21px}.topo h1,.header h1{font-size:24px}.formulario{grid-template-columns:1fr}.panel table{min-width:580px}}</style>
 </head>
 <body>
     <?php include "../../includes/menu_coordenacao.php"; ?>

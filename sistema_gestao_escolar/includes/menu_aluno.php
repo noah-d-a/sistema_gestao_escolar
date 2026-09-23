@@ -1,96 +1,33 @@
 <style>
-    body {
-        margin: 0;
-        padding-left: 230px;
-        background: #f3f6fb;
-        font-family: Arial, sans-serif;
-    }
+:root{--atlas-ink:#202338;--atlas-muted:#777d93;--atlas-accent:#6664df;--atlas-line:#e7e9f1;--atlas-bg:#f7f8fc;--atlas-side:#171927;--atlas-side-width:246px}
+body{padding-left:var(--atlas-side-width);margin:0;transition:padding-left .22s ease}body.atlas-collapsed{--atlas-side-width:76px}
+#menu{position:fixed;inset:0 auto 0 0;width:var(--atlas-side-width);height:100dvh;background:var(--atlas-side);color:#fff;z-index:100;display:flex;flex-direction:column;padding:24px 13px 16px;box-sizing:border-box;transition:width .22s ease;overflow-x:hidden}
+#menu *{box-sizing:border-box}#menu .atlas-brand{display:flex;align-items:center;gap:12px;padding:2px 10px 26px;min-height:62px;text-decoration:none;color:#fff;white-space:nowrap}#menu .atlas-mark{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#fff;padding:3px}#menu .atlas-logo{display:block;width:100%;height:100%}#menu .atlas-brand-name{font-size:19px;font-weight:750;letter-spacing:-.06em}#menu .atlas-brand-name small{display:block;color:#898da5;font-size:10px;font-weight:500;letter-spacing:.09em;margin-top:2px}
+#menu .atlas-nav-label{color:#777d97;font-size:10px;letter-spacing:.14em;font-weight:750;padding:10px 14px 12px;white-space:nowrap}#menu ul{list-style:none;padding:0;margin:0;display:grid;gap:4px}#menu li{margin:0}#menu a.atlas-link{display:flex;align-items:center;gap:13px;min-height:43px;padding:0 13px;color:#9da2b9;text-decoration:none;border-radius:10px;font-size:13px;font-weight:550;white-space:nowrap;transition:background .16s,color .16s}#menu a.atlas-link:hover{background:#25283b;color:#fff}#menu a.atlas-link[aria-current="page"]{background:#303149;color:#fff;box-shadow:inset 3px 0 #8583ff}#menu .atlas-icon{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#menu .atlas-link[aria-current="page"] .atlas-icon{color:#a7a5ff}#menu .atlas-spacer{flex:1}#menu .atlas-foot{border-top:1px solid #303244;padding:16px 8px 0;display:flex;align-items:center;gap:10px;min-height:58px}#menu .atlas-avatar{flex:none;width:34px;height:34px;border-radius:11px;background:#383c61;display:grid;place-items:center;color:#c9c8ff;font-size:12px;font-weight:800}#menu .atlas-foot-text{min-width:0;white-space:nowrap}#menu .atlas-foot-text strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;max-width:145px}#menu .atlas-foot-text small{display:block;color:#878da7;font-size:11px;margin-top:3px}#atlas-toggle{border:1px solid #393c50;background:#242638;color:#c7c9db;border-radius:9px;width:31px;height:31px;display:grid;place-items:center;cursor:pointer;margin-left:auto;flex:none}#atlas-toggle:hover{background:#393c56}#atlas-toggle svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+body.atlas-collapsed #menu .atlas-brand-name,body.atlas-collapsed #menu .atlas-nav-label,body.atlas-collapsed #menu .atlas-link-text,body.atlas-collapsed #menu .atlas-foot-text{display:none}body.atlas-collapsed #menu .atlas-brand{padding-left:8px}body.atlas-collapsed #menu a.atlas-link{justify-content:center;padding:0}body.atlas-collapsed #menu .atlas-foot{padding-left:0;padding-right:0;flex-direction:column;gap:10px}body.atlas-collapsed #atlas-toggle{margin:0}body.atlas-collapsed #menu .atlas-nav-label{height:24px}
+#atlas-mobile-toggle{display:none}#atlas-menu-overlay{display:none}
+@media(max-width:800px){body,body.atlas-collapsed{padding-left:0;--atlas-side-width:246px}#menu{transform:translateX(-100%);width:246px;transition:transform .22s ease}body.atlas-menu-open #menu{transform:translateX(0)}body.atlas-collapsed #menu .atlas-brand-name,body.atlas-collapsed #menu .atlas-nav-label,body.atlas-collapsed #menu .atlas-link-text,body.atlas-collapsed #menu .atlas-foot-text{display:block}body.atlas-collapsed #menu a.atlas-link{justify-content:flex-start;padding:0 13px}body.atlas-collapsed #menu .atlas-foot{flex-direction:row;padding:16px 8px 0}#atlas-toggle{display:none}#atlas-mobile-toggle{display:grid;position:fixed;top:15px;left:15px;z-index:90;width:40px;height:40px;place-items:center;background:#fff;color:#25283b;border:1px solid #e4e6ed;border-radius:11px;box-shadow:0 4px 16px #1a203012;cursor:pointer}#atlas-mobile-toggle svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}body.atlas-menu-open #atlas-menu-overlay{display:block;position:fixed;inset:0;background:#11162988;z-index:95}}
+@media(prefers-reduced-motion:reduce){body,#menu,#menu a.atlas-link{transition:none!important}}
 
-    #menu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 230px;
-        height: 100vh;
-        background: linear-gradient(180deg, #0b1f3a 0%, #123660 100%);
-        color: #fff;
-        box-shadow: 3px 0 18px rgba(11, 31, 58, 0.25);
-        padding: 18px 14px;
-        box-sizing: border-box;
-    }
-
-    #menu .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        padding: 10px 8px 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.12);
-    }
-
-    #menu .brand img {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.1);
-        padding: 4px;
-    }
-
-    #menu .brand span {
-        font-size: 0.92rem;
-        font-weight: bold;
-        letter-spacing: 0.04em;
-    }
-
-    #menu ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    #menu li {
-        margin: 6px 0;
-    }
-
-    #menu a {
-        display: block;
-        padding: 12px 14px;
-        border-radius: 10px;
-        color: #dfeafc;
-        text-decoration: none;
-        font-weight: 600;
-        transition: 0.2s ease;
-    }
-
-    #menu a:hover {
-        background: rgba(255,255,255,0.09);
-        color: #fff;
-    }
-
-    @media (max-width: 768px) {
-        body {
-            padding-left: 0;
-        }
-
-        #menu {
-            position: relative;
-            width: 100%;
-            height: auto;
-        }
-    }
+/* Saída segura da conta */
+#menu .atlas-logout-form{margin:10px 8px 0;flex:none}
+#menu .atlas-logout{width:100%;min-height:42px;display:flex;align-items:center;gap:13px;padding:9px 13px;border:1px solid #393c50;border-radius:10px;background:#242638;color:#e6e7f2;font:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer;transition:background .16s,color .16s}
+#menu .atlas-logout:hover,#menu .atlas-logout:focus-visible{background:#393c56;color:#fff}
+#menu .atlas-logout svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.atlas-collapsed #menu .atlas-logout{justify-content:center;padding:9px 0}
+body.atlas-collapsed #menu .atlas-logout-label{display:none}
+@media(max-width:800px){body.atlas-collapsed #menu .atlas-logout{justify-content:flex-start;padding:9px 13px}body.atlas-collapsed #menu .atlas-logout-label{display:inline}}
 </style>
-<nav id="menu">
-    <div class="brand">
-        <img src="../../imgs/logo.png" alt="Instituto Atlas" />
-        <span>Instituto Atlas</span>
-    </div>
-    <ul>
-        <li><a href="inicio_aluno.php">Início</a></li>
-        <li><a href="cadastro_aluno.php">Cadastro</a></li>
-        <li><a href="boletim_aluno.php">Boletim</a></li>
-        <li><a href="presenca_aluno.php">Presença</a></li>
-        <li><a href="horario_aluno.php">Horário</a></li>
-        <li><a href="mensagens_aluno.php">Mensagens</a></li>
-        <li><a href="questionarios_aluno.php">Questionários</a></li>
-    </ul>
-</nav>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg"><symbol id="ai-home" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol><symbol id="ai-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3-7 8-7s8 3 8 7"/></symbol><symbol id="ai-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1zm0 0v15"/></symbol><symbol id="ai-check" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5 3 3 5-5"/></symbol><symbol id="ai-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol><symbol id="ai-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol><symbol id="ai-list" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M9 10h6m-6 4h6m-6 4h4"/></symbol></svg>
+<button id="atlas-mobile-toggle" type="button" aria-label="Abrir menu" aria-controls="menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div id="atlas-menu-overlay" aria-hidden="true"></div>
+<nav id="menu" aria-label="Navegação do aluno"><a class="atlas-brand" href="inicio_aluno.php"><span class="atlas-mark"><svg class="atlas-logo" viewBox="0 0 64 64" role="img" aria-label="Símbolo do Instituto Atlas" xmlns="http://www.w3.org/2000/svg"><path fill="#192b49" d="M26 5h12L61 59H46L32 25 17 59H3z"/><path fill="#7654d8" d="M7 58C19 41 31 31 52 24c-15 11-23 21-30 34z"/><path fill="#fff" d="M6 55c15-16 29-24 48-29-17 8-30 18-40 29z"/><path fill="#7654d8" d="m54 8 2.4 5.6L62 16l-5.6 2.4L54 24l-2.4-5.6L46 16l5.6-2.4z"/></svg></span><span class="atlas-brand-name">atlas.<small>PORTAL ACADÊMICO</small></span></a><div class="atlas-nav-label">MENU PRINCIPAL</div><ul>
+<?php
+$atlas_links = [['inicio_aluno.php','Visão geral','ai-home'],['cadastro_aluno.php','Cadastro','ai-user'],['boletim_aluno.php','Boletim','ai-book'],['presenca_aluno.php','Presença','ai-check'],['horario_aluno.php','Horário','ai-clock'],['mensagens_aluno.php','Mensagens','ai-mail'],['questionarios_aluno.php','Questionários','ai-list']];
+$atlas_atual = basename($_SERVER['SCRIPT_NAME'] ?? '');
+foreach ($atlas_links as [$arquivo,$titulo,$icone]) {
+ $ativo = $atlas_atual === $arquivo ? ' aria-current="page"' : '';
+ echo '<li><a class="atlas-link" href="'.htmlspecialchars($arquivo, ENT_QUOTES, 'UTF-8').'"'.$ativo.' title="'.htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8').'"><svg class="atlas-icon" aria-hidden="true"><use href="#'.$icone.'"/></svg><span class="atlas-link-text">'.htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8').'</span></a></li>';
+}
+?>
+</ul><div class="atlas-spacer"></div><div class="atlas-foot"><div class="atlas-avatar" aria-hidden="true">A</div><div class="atlas-foot-text"><strong title="<?php echo htmlspecialchars($_SESSION['nome'] ?? 'Aluno', ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars(explode(' ', trim($_SESSION['nome'] ?? 'Aluno'))[0], ENT_QUOTES, 'UTF-8'); ?></strong><small>Conta de estudante</small></div><button id="atlas-toggle" type="button" aria-label="Recolher menu" aria-expanded="true" title="Recolher menu"><svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg></button></div><form class="atlas-logout-form" action="../../includes/logout.php" method="post"><button class="atlas-logout" type="submit" title="Encerrar sessão"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 7l5 5-5 5M8 12h11"/></svg><span class="atlas-logout-label">Sair da conta</span></button></form></nav>
+<script>(function(){'use strict';var body=document.body,sidebar=document.getElementById('menu'),toggle=document.getElementById('atlas-toggle'),mobile=document.getElementById('atlas-mobile-toggle'),overlay=document.getElementById('atlas-menu-overlay');if(!sidebar||!toggle||!mobile)return;function closeMobile(){body.classList.remove('atlas-menu-open');mobile.setAttribute('aria-expanded','false');mobile.setAttribute('aria-label','Abrir menu')}toggle.addEventListener('click',function(){var collapsed=body.classList.toggle('atlas-collapsed');toggle.setAttribute('aria-expanded',String(!collapsed));toggle.setAttribute('aria-label',collapsed?'Expandir menu':'Recolher menu');toggle.title=collapsed?'Expandir menu':'Recolher menu'});mobile.addEventListener('click',function(){var open=body.classList.toggle('atlas-menu-open');mobile.setAttribute('aria-expanded',String(open));mobile.setAttribute('aria-label',open?'Fechar menu':'Abrir menu')});overlay.addEventListener('click',closeMobile);document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMobile()});window.addEventListener('resize',function(){if(window.innerWidth>800)closeMobile()});})();</script>
