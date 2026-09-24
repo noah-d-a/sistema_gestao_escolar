@@ -17,6 +17,22 @@ body.atlas-collapsed #menu .atlas-brand-name,body.atlas-collapsed #menu .atlas-n
 body.atlas-collapsed #menu .atlas-logout{justify-content:center;padding:9px 0}
 body.atlas-collapsed #menu .atlas-logout-label{display:none}
 @media(max-width:800px){body.atlas-collapsed #menu .atlas-logout{justify-content:flex-start;padding:9px 13px}body.atlas-collapsed #menu .atlas-logout-label{display:inline}}
+
+/* Confirmação de saída */
+.atlas-logout-modal[hidden]{display:none}
+.atlas-logout-modal{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(17,19,31,.58);backdrop-filter:blur(3px)}
+.atlas-logout-dialog{width:min(420px,100%);background:#fff;border:1px solid #e7e9f1;border-radius:18px;padding:24px;box-shadow:0 24px 70px rgba(17,19,31,.22);color:#202338}
+.atlas-logout-dialog-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:#f1f0ff;color:#6664df;margin-bottom:16px}
+.atlas-logout-dialog-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.atlas-logout-dialog h2{font:700 20px/1.25 Inter,system-ui,sans-serif;letter-spacing:-.02em;margin:0 0 8px}
+.atlas-logout-dialog p{font:400 13.5px/1.55 Inter,system-ui,sans-serif;color:#777d93;margin:0}
+.atlas-logout-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.atlas-logout-actions button{min-height:40px;border-radius:10px;padding:0 16px;font:650 13px Inter,system-ui,sans-serif;cursor:pointer}
+.atlas-logout-cancel{background:#fff;color:#4c5268;border:1px solid #dfe2eb}
+.atlas-logout-cancel:hover{background:#f7f8fc}
+.atlas-logout-confirm{background:#292b3e;color:#fff;border:1px solid #292b3e}
+.atlas-logout-confirm:hover{background:#1d1f2e}
+@media(max-width:520px){.atlas-logout-dialog{padding:20px}.atlas-logout-actions{flex-direction:column-reverse}.atlas-logout-actions button{width:100%}}
 </style>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg"><symbol id="ai-home" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol><symbol id="ai-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3-7 8-7s8 3 8 7"/></symbol><symbol id="ai-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1zm0 0v15"/></symbol><symbol id="ai-check" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5 3 3 5-5"/></symbol><symbol id="ai-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol><symbol id="ai-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol><symbol id="ai-list" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M9 10h6m-6 4h6m-6 4h4"/></symbol></svg>
 <button id="atlas-mobile-toggle" type="button" aria-label="Abrir menu" aria-controls="menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div id="atlas-menu-overlay" aria-hidden="true"></div>
@@ -30,4 +46,17 @@ foreach ($atlas_links as [$arquivo,$titulo,$icone]) {
 }
 ?>
 </ul><div class="atlas-spacer"></div><div class="atlas-foot"><div class="atlas-avatar" aria-hidden="true">A</div><div class="atlas-foot-text"><strong title="<?php echo htmlspecialchars($_SESSION['nome'] ?? 'Aluno', ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars(explode(' ', trim($_SESSION['nome'] ?? 'Aluno'))[0], ENT_QUOTES, 'UTF-8'); ?></strong><small>Conta de estudante</small></div><button id="atlas-toggle" type="button" aria-label="Recolher menu" aria-expanded="true" title="Recolher menu"><svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg></button></div><form class="atlas-logout-form" action="../../includes/logout.php" method="post"><button class="atlas-logout" type="submit" title="Encerrar sessão"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 7l5 5-5 5M8 12h11"/></svg><span class="atlas-logout-label">Sair da conta</span></button></form></nav>
+<div class="atlas-logout-modal" id="atlas-logout-modal" hidden aria-hidden="true">
+  <div class="atlas-logout-dialog" role="dialog" aria-modal="true" aria-labelledby="atlas-logout-title" aria-describedby="atlas-logout-description">
+    <div class="atlas-logout-dialog-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 7l5 5-5 5M8 12h11"/></svg></div>
+    <h2 id="atlas-logout-title">Sair da conta?</h2>
+    <p id="atlas-logout-description">Você precisará entrar novamente para acessar o portal.</p>
+    <div class="atlas-logout-actions">
+      <button type="button" class="atlas-logout-cancel">Cancelar</button>
+      <button type="button" class="atlas-logout-confirm">Sair da conta</button>
+    </div>
+  </div>
+</div>
+
 <script>(function(){'use strict';var body=document.body,sidebar=document.getElementById('menu'),toggle=document.getElementById('atlas-toggle'),mobile=document.getElementById('atlas-mobile-toggle'),overlay=document.getElementById('atlas-menu-overlay');if(!sidebar||!toggle||!mobile)return;function closeMobile(){body.classList.remove('atlas-menu-open');mobile.setAttribute('aria-expanded','false');mobile.setAttribute('aria-label','Abrir menu')}toggle.addEventListener('click',function(){var collapsed=body.classList.toggle('atlas-collapsed');toggle.setAttribute('aria-expanded',String(!collapsed));toggle.setAttribute('aria-label',collapsed?'Expandir menu':'Recolher menu');toggle.title=collapsed?'Expandir menu':'Recolher menu'});mobile.addEventListener('click',function(){var open=body.classList.toggle('atlas-menu-open');mobile.setAttribute('aria-expanded',String(open));mobile.setAttribute('aria-label',open?'Fechar menu':'Abrir menu')});overlay.addEventListener('click',closeMobile);document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMobile()});window.addEventListener('resize',function(){if(window.innerWidth>800)closeMobile()});})();</script>
+<script>(function(){'use strict';var modal=document.getElementById('atlas-logout-modal'),form=document.querySelector('.atlas-logout-form'),cancel=modal&&modal.querySelector('.atlas-logout-cancel'),confirmBtn=modal&&modal.querySelector('.atlas-logout-confirm'),dialog=modal&&modal.querySelector('.atlas-logout-dialog'),lastFocus=null;if(!modal||!form||!cancel||!confirmBtn)return;function openModal(){lastFocus=document.activeElement;modal.hidden=false;modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';cancel.focus()}function closeModal(){modal.hidden=true;modal.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus()}form.addEventListener('submit',function(e){if(!form.dataset.confirmed){e.preventDefault();openModal()}});cancel.addEventListener('click',closeModal);confirmBtn.addEventListener('click',function(){form.dataset.confirmed='1';form.requestSubmit()});modal.addEventListener('click',function(e){if(e.target===modal)closeModal()});if(dialog)dialog.addEventListener('click',function(e){e.stopPropagation()});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)closeModal()})})();</script>
