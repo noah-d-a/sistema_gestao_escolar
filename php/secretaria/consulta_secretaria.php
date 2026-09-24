@@ -121,7 +121,7 @@ if ($tipo === 'professor') {
                         </div>
                         <div class="actions">
                             <a class="btn-small btn-edit" href="alterar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Editar</a>
-                            <a class="btn-small btn-delete" onclick="return confirm('Deseja realmente excluir este registro?');" href="deletar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Deletar</a>
+                            <a class="btn-small btn-delete" data-atlas-confirm="Deseja realmente excluir este registro?" href="deletar_secretaria.php?id=<?php echo isset($reg['id_usuario']) ? $reg['id_usuario'] : ($reg['id_turma'] ?? $reg['id_disciplina']); ?>&tipo=<?php echo htmlspecialchars($tipo); ?>">Deletar</a>
                         </div>
                     </article>
                 <?php endforeach; ?>
